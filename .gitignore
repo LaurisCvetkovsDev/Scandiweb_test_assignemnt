@@ -1,10 +1,16 @@
 # Database files
 **/Database.php
+Backend/Database.php
+Backend/src/Database.php
+NewBackend/src/Database.php
+NewBackend/Database.php
 *.db
 *.sqlite
 *.sqlite3
 database.php
-Database.php
+database.sql
+backup.sql
+*.dump
 
 # Environment files
 .env
@@ -14,11 +20,18 @@ Database.php
 .env.production.local
 .env.backup
 
+# Configuration files with sensitive data
+config/database.php
+config/database.config.php
+Backend/config/database.php
+NewBackend/config/database.php
+
 # Dependencies
 node_modules/
 /frontend/node_modules/
 vendor/
 composer.phar
+.composer-cache/
 
 # IDE and Editor files
 .vscode/
@@ -42,29 +55,34 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 logs/
+error.log
+access.log
 
 # Temporary files
 tmp/
 temp/
 *.tmp
+*.bak
+*.backup
 
 # Build outputs
 /frontend/dist/
 /frontend/build/
+dist/
+build/
+*.min.js
+*.min.css
 *.tgz
 *.tar.gz
 
 # PHP specific
 composer.lock
 
-# WAMP/Apache logs
-error.log
-access.log
-
-# Backup files
-*.bak
-*.backup
-
 # Cache directories
 .cache/
-.parcel-cache/ 
+.parcel-cache/
+
+# WAMP/XAMPP specific
+phpmyadmin/
+webalizer/
+*.access
