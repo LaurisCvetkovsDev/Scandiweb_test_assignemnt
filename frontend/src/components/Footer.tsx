@@ -1,5 +1,3 @@
-import tomatoe from "../assets/000102401.gif";
-
 const Footer = () => {
   return (
     <footer
