@@ -167,3 +167,24 @@ export const fetchProductsByCategory = async (category: string): Promise<Product
     return [];
   }
 };
+
+// Place order mutation
+export const placeOrder = async (orderData: ProductData[], totalAmount: number): Promise<any> => {
+  const mutation = `
+    mutation PlaceOrder($orderData: String!, $totalAmount: Float!) {
+      placeOrder(orderData: $orderData, totalAmount: $totalAmount) {
+        id
+        success
+        message
+      }
+    }
+  `;
+
+  try {
+    const data = await graphqlRequest(mutation, { orderData, totalAmount });
+    return data.placeOrder;
+  } catch (error) {
+    console.error("Place order error:", error);
+    throw error;
+  }
+};

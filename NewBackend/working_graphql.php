@@ -74,6 +74,43 @@ try {
                 'errors' => [['message' => 'Product ID required']]
             ]);
         }
+    } elseif (strpos($query, 'mutation') !== false && strpos($query, 'placeOrder') !== false) {
+        // Handle place order mutation
+        $dbConn = Database::getInstance();
+
+        // Create orders table if it doesn't exist
+        $createTableQuery = "
+            CREATE TABLE IF NOT EXISTS orders (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                order_data JSON NOT NULL,
+                total_amount DECIMAL(10,2) NOT NULL,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        ";
+        $dbConn->getConnection()->exec($createTableQuery);
+
+        // Extract order data from variables
+        $variables = $input['variables'] ?? [];
+        $orderData = $variables['orderData'] ?? '[]';
+        $totalAmount = $variables['totalAmount'] ?? 0;
+
+        // Insert order into database
+        $stmt = $dbConn->getConnection()->prepare(
+            "INSERT INTO orders (order_data, total_amount) VALUES (?, ?)"
+        );
+        $stmt->execute([json_encode($orderData), $totalAmount]);
+
+        $orderId = $dbConn->getConnection()->lastInsertId();
+
+        echo json_encode([
+            'data' => [
+                'placeOrder' => [
+                    'id' => $orderId,
+                    'success' => true,
+                    'message' => 'Order placed successfully'
+                ]
+            ]
+        ]);
     } else {
         echo json_encode([
             'errors' => [['message' => 'Unknown query']]

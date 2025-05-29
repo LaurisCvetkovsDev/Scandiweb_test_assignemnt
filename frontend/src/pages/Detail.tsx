@@ -9,7 +9,7 @@ const Detail = () => {
   const product = useDataStore((state) => state.product);
   const setProduct = useDataStore((state) => state.setProduct);
   const addToCart = useDataStore((state) => state.addToCart);
-  const [selectedItems, setSelectedItem] = useState(0);
+  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [selectedAttributes, setSelectedAttributes] = useState<{
     [key: string]: string;
   }>({});
@@ -20,8 +20,33 @@ const Detail = () => {
     }
   }, [id, setProduct]);
 
+  useEffect(() => {
+    if (product && product.attributes) {
+      // Set default selected attributes (first item for each attribute)
+      const defaultAttributes: { [key: string]: string } = {};
+      product.attributes.forEach((attr) => {
+        if (attr.items.length > 0) {
+          defaultAttributes[attr.name] = attr.items[0].id;
+        }
+      });
+      setSelectedAttributes(defaultAttributes);
+    }
+  }, [product]);
+
   if (!product) {
-    return <div>Loading...</div>;
+    return (
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "50vh",
+          fontSize: "18px",
+        }}
+      >
+        Loading...
+      </div>
+    );
   }
 
   const handleSelect = (attrName: string, itemId: string) => {
@@ -56,47 +81,227 @@ const Detail = () => {
     return toCartItem;
   };
 
+  const nextImage = () => {
+    setSelectedImageIndex((prev) =>
+      prev === product.gallery.length - 1 ? 0 : prev + 1
+    );
+  };
+
+  const prevImage = () => {
+    setSelectedImageIndex((prev) =>
+      prev === 0 ? product.gallery.length - 1 : prev - 1
+    );
+  };
+
+  const toKebabCase = (str: string) => {
+    return str.toLowerCase().replace(/\s+/g, "-");
+  };
+
+  // Safe HTML parsing (forbidden to use dangerouslySetInnerHTML)
+  const parseHtmlDescription = (html: string) => {
+    // Simple HTML parsing without dangerouslySetInnerHTML
+    return html
+      .replace(/<[^>]*>/g, "") // Remove HTML tags
+      .replace(/&nbsp;/g, " ")
+      .replace(/&amp;/g, "&")
+      .replace(/&lt;/g, "<")
+      .replace(/&gt;/g, ">")
+      .replace(/&quot;/g, '"');
+  };
+
+  // Check if all required attributes are selected
+  const allAttributesSelected = product.attributes.every(
+    (attr) => selectedAttributes[attr.name]
+  );
+
   return (
-    <div className="detail-container">
-      <div className="row align-items-start justify-content-center">
+    <div
+      style={{
+        backgroundColor: "#f8f9fa",
+        minHeight: "100vh",
+        padding: "40px 20px",
+      }}
+    >
+      <div
+        style={{
+          maxWidth: "1200px",
+          margin: "0 auto",
+          display: "grid",
+          gridTemplateColumns: "auto 1fr 400px",
+          gap: "40px",
+          alignItems: "start",
+        }}
+      >
+        {/* Thumbnail Gallery */}
         <div
-          className="col-1 overflow-auto detail-gallery-thumbs"
-          style={{ maxHeight: "600px" }}
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            gap: "16px",
+            width: "100px",
+          }}
         >
           {product.gallery.map((item, index) => (
-            <div key={index} className="mb-2">
-              <a
-                href="#"
-                onClick={(e) => {
-                  e.preventDefault();
-                  setSelectedItem(index);
+            <div
+              key={index}
+              style={{
+                cursor: "pointer",
+                border:
+                  selectedImageIndex === index
+                    ? "2px solid #4ade80"
+                    : "2px solid transparent",
+                borderRadius: "4px",
+                overflow: "hidden",
+              }}
+              onClick={() => setSelectedImageIndex(index)}
+            >
+              <img
+                src={item.url}
+                alt={`Thumbnail ${index}`}
+                style={{
+                  width: "100%",
+                  height: "120px",
+                  objectFit: "cover",
+                  display: "block",
                 }}
-              >
-                <img
-                  src={item.url}
-                  alt={`Thumbnail ${index}`}
-                  className="img-fluid"
-                />
-              </a>
+              />
             </div>
           ))}
         </div>
 
-        <div className="col-5">
+        {/* Main Image */}
+        <div
+          data-testid="product-gallery"
+          style={{
+            position: "relative",
+            backgroundColor: "white",
+            borderRadius: "8px",
+            overflow: "hidden",
+          }}
+        >
           <img
-            src={product.gallery[selectedItems]?.url}
+            src={product.gallery[selectedImageIndex]?.url}
             alt="Selected"
-            className="img-fluid height-50 width-auto m-3"
+            style={{
+              width: "100%",
+              height: "600px",
+              objectFit: "cover",
+              display: "block",
+            }}
           />
+
+          {/* Navigation Arrows */}
+          {product.gallery.length > 1 && (
+            <>
+              <button
+                onClick={prevImage}
+                style={{
+                  position: "absolute",
+                  left: "16px",
+                  top: "50%",
+                  transform: "translateY(-50%)",
+                  backgroundColor: "rgba(0,0,0,0.5)",
+                  color: "white",
+                  border: "none",
+                  borderRadius: "4px",
+                  width: "40px",
+                  height: "40px",
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                  <path
+                    d="M10 12L6 8L10 4"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </button>
+
+              <button
+                onClick={nextImage}
+                style={{
+                  position: "absolute",
+                  right: "16px",
+                  top: "50%",
+                  transform: "translateY(-50%)",
+                  backgroundColor: "rgba(0,0,0,0.5)",
+                  color: "white",
+                  border: "none",
+                  borderRadius: "4px",
+                  width: "40px",
+                  height: "40px",
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                  <path
+                    d="M6 4L10 8L6 12"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </button>
+            </>
+          )}
         </div>
 
-        <div className="col">
-          <h1>{product.name}</h1>
+        {/* Product Info */}
+        <div
+          style={{
+            backgroundColor: "white",
+            padding: "40px",
+            borderRadius: "8px",
+            height: "fit-content",
+          }}
+        >
+          <h1
+            style={{
+              fontSize: "30px",
+              fontWeight: "600",
+              margin: "0 0 30px 0",
+              color: "#333",
+            }}
+          >
+            {product.name}
+          </h1>
 
+          {/* Attributes */}
           {product.attributes.map((attribute) => (
-            <div key={attribute.name} className="mb-3">
-              <p>{attribute.name}</p>
-              <div className="d-flex flex-wrap gap-2">
+            <div
+              key={attribute.name}
+              style={{ marginBottom: "30px" }}
+              data-testid={`product-attribute-${toKebabCase(attribute.name)}`}
+            >
+              <h3
+                style={{
+                  fontSize: "18px",
+                  fontWeight: "700",
+                  marginBottom: "16px",
+                  color: "#333",
+                  textTransform: "uppercase",
+                }}
+              >
+                {attribute.name}:
+              </h3>
+
+              <div
+                style={{
+                  display: "flex",
+                  gap: "12px",
+                  flexWrap: "wrap",
+                }}
+              >
                 {attribute.items.map((item) => {
                   const isSelected =
                     selectedAttributes[attribute.name] === item.id;
@@ -106,21 +311,33 @@ const Detail = () => {
                     <button
                       key={item.id}
                       onClick={() => handleSelect(attribute.name, item.id)}
-                      className={`btn ${
-                        isColor
-                          ? ""
-                          : isSelected
-                          ? "btn-dark"
-                          : "btn-warning text-white"
-                      }`}
                       style={{
-                        backgroundColor: isColor ? item.value : undefined,
-                        border:
-                          isColor && isSelected
-                            ? "3px solid black"
-                            : "1px solid #ccc",
-                        width: isColor ? "40px" : undefined,
-                        height: isColor ? "40px" : undefined,
+                        ...(isColor
+                          ? {
+                              width: "40px",
+                              height: "40px",
+                              backgroundColor: item.value,
+                              border: isSelected
+                                ? "3px solid #333"
+                                : "1px solid #ccc",
+                              borderRadius: "4px",
+                              cursor: "pointer",
+                              outline: "none",
+                            }
+                          : {
+                              padding: "12px 24px",
+                              border: isSelected
+                                ? "2px solid #333"
+                                : "1px solid #333",
+                              backgroundColor: isSelected ? "#333" : "white",
+                              color: isSelected ? "white" : "#333",
+                              fontSize: "16px",
+                              fontWeight: "400",
+                              cursor: "pointer",
+                              borderRadius: "4px",
+                              outline: "none",
+                              transition: "all 0.2s ease",
+                            }),
                       }}
                     >
                       {isColor ? "" : item.value}
@@ -131,27 +348,66 @@ const Detail = () => {
             </div>
           ))}
 
-          <p>Price:</p>
-          <h3>
-            {product.prices.map((item, index) => (
-              <div className="d-flex flex-row" key={index}>
-                <h3>{item.amount}</h3>
-                <h3>{item.currencySymbol}</h3>
-              </div>
-            ))}
-          </h3>
+          {/* Price */}
+          <div style={{ marginBottom: "30px" }}>
+            <h3
+              style={{
+                fontSize: "18px",
+                fontWeight: "700",
+                marginBottom: "8px",
+                color: "#333",
+                textTransform: "uppercase",
+              }}
+            >
+              Price:
+            </h3>
+            <div style={{ fontSize: "24px", fontWeight: "700", color: "#333" }}>
+              {product.prices.map((price, index) => (
+                <span key={index}>
+                  {price.currencySymbol}
+                  {price.amount.toFixed(2)}
+                </span>
+              ))}
+            </div>
+          </div>
 
+          {/* Add to Cart Button */}
           <button
-            className="btn btn-primary p-3 width-10 m-top-5"
+            data-testid="add-to-cart"
             onClick={() => addToCart(setToCartItem())}
+            disabled={!product.inStock || !allAttributesSelected}
+            style={{
+              width: "100%",
+              backgroundColor:
+                product.inStock && allAttributesSelected ? "#4ade80" : "#ccc",
+              color: "white",
+              padding: "16px",
+              fontSize: "16px",
+              fontWeight: "600",
+              textTransform: "uppercase",
+              borderRadius: "4px",
+              marginBottom: "24px",
+              border: "none",
+              cursor:
+                product.inStock && allAttributesSelected
+                  ? "pointer"
+                  : "not-allowed",
+            }}
           >
-            Add to cart
+            {!product.inStock ? "Out of Stock" : "Add to Cart"}
           </button>
 
+          {/* Product Description */}
           <div
-            className="p-2"
-            dangerouslySetInnerHTML={{ __html: product.description }}
-          />
+            data-testid="product-description"
+            style={{
+              fontSize: "14px",
+              lineHeight: "1.6",
+              color: "#666",
+            }}
+          >
+            {parseHtmlDescription(product.description)}
+          </div>
         </div>
       </div>
     </div>

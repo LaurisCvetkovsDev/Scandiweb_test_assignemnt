@@ -1,65 +1,55 @@
+/* Global Reset and Base Styles */
 html,
 body,
 #root {
   height: 100%;
   margin: 0;
+  padding: 0;
+  font-family: 'Raleway', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-.App {
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
+* {
+  box-sizing: border-box;
 }
 
-main {
-  flex: 1;
+/* Remove default link styles */
+a {
+  text-decoration: none;
+  color: inherit;
 }
 
-
-.footer{
-  
-  width: 100%;
-  text-align: center;
+/* Button reset */
+button {
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-family: inherit;
 }
 
-
-.gallery {
-  margin: 5px;
-  border: 1px solid #ccc;
-  float: left;
-  width: 150px;
+/* Remove default list styles */
+ul, ol {
+  list-style: none;
+  padding: 0;
+  margin: 0;
 }
 
-.gallery:hover {
-  border: 1px solid #777;
-}
-
-.gallery img {
-  width: 100%;
+/* Image base styles */
+img {
+  max-width: 100%;
   height: auto;
-  
+  display: block;
 }
 
-.desc {
-  padding: 15px;
-  text-align: center;
-}
-.out-of-stock-container {
-  position: relative;
-  filter: grayscale(100%) brightness(60%);
+/* Product Grid Cart Button Hover Effect */
+.product-cart-button {
+  opacity: 0 !important;
+  transition: opacity 0.2s ease !important;
 }
 
-.out-of-stock-text {
-
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  color: white;
-  font-weight: bold;
-  font-size: 1.5rem;
-  background-color: rgba(0, 0, 0, 0.5);
-  padding: 6px 12px;
-  border-radius: 5px;
-  pointer-events: none;
-}
+.product-card:hover .product-cart-button {
+  opacity: 1 !important;
+} 

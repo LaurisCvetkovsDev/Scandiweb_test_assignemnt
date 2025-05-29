@@ -4,9 +4,16 @@ import Footer from "./components/Footer";
 
 const Layout = () => {
   return (
-    <div className="App">
+    <div
+      style={{
+        minHeight: "100vh",
+        display: "flex",
+        flexDirection: "column",
+        backgroundColor: "#f8f9fa",
+      }}
+    >
       <NavBar />
-      <main>
+      <main style={{ flex: 1 }}>
         <Outlet />
       </main>
       <Footer />

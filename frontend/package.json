@@ -10,16 +10,10 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@emotion/react": "^11.14.0",
-    "@emotion/styled": "^11.14.0",
-    "@mui/icons-material": "^7.1.0",
-    "@mui/material": "^7.1.0",
     "bootstrap": "^5.3.5",
-    "material": "^0.9.23",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-router-dom": "^7.5.3",
-    "router-dom": "^3.0.3",
     "zustand": "^5.0.4"
   },
   "devDependencies": {
