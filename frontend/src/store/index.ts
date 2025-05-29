@@ -5,6 +5,7 @@ import { fetchProducts, fetchProduct, fetchProductsByCategory } from '../service
 type DataStore = {
   cart: ProductData[];
   addToCart: (product: ProductData) => void;
+  removeFromCart: (index: number) => void;
   clearCart: () => void;
 
   products: ProductData[];
@@ -20,6 +21,10 @@ export const useDataStore = create<DataStore>((set, get) => ({
   addToCart: (product) => {
     const { cart } = get();
     set({ cart: [...cart, product] });
+  },
+  removeFromCart: (index: number) => {
+    const { cart } = get();
+    set({ cart: cart.filter((_, i) => i !== index) });
   },
   clearCart: () => {
     set({ cart: [] });

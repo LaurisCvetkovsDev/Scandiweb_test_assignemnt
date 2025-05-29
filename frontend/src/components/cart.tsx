@@ -8,7 +8,7 @@ interface CartProps {
 
 const Cart = ({ onClose }: CartProps) => {
   const cart = useDataStore((state) => state.cart);
-  const clearCart = useDataStore((state) => state.clearCart);
+  const removeFromCart = useDataStore((state) => state.removeFromCart);
   const [quantities, setQuantities] = useState<{ [key: number]: number }>({});
   const [isPlacingOrder, setIsPlacingOrder] = useState(false);
 
@@ -20,6 +20,26 @@ const Cart = ({ onClose }: CartProps) => {
       ...prev,
       [index]: quantity,
     }));
+  };
+
+  const handleRemoveFromCart = (index: number) => {
+    // Remove the item from cart
+    removeFromCart(index);
+
+    // Update quantities state to remove the deleted index and shift down all indices above it
+    setQuantities((prev) => {
+      const newQuantities: { [key: number]: number } = {};
+      Object.keys(prev).forEach((key) => {
+        const keyIndex = parseInt(key);
+        if (keyIndex < index) {
+          // Keep indices below the removed index
+          newQuantities[keyIndex] = prev[keyIndex];
+        } else if (keyIndex > index) {
+          newQuantities[keyIndex - 1] = prev[keyIndex];
+        }
+      });
+      return newQuantities;
+    });
   };
 
   const getTotalPrice = () => {
@@ -37,7 +57,6 @@ const Cart = ({ onClose }: CartProps) => {
 
     setIsPlacingOrder(true);
     try {
-      // Prepare order data with quantities
       const orderData = cart.map((product, index) => ({
         ...product,
         quantity: getQuantity(index),
@@ -49,13 +68,8 @@ const Cart = ({ onClose }: CartProps) => {
       const result = await placeOrder(orderData, totalAmount);
 
       if (result.success) {
-        // Clear cart after successful order
-        clearCart();
-        // Clear local quantities
         setQuantities({});
-        // Optionally show success message
         alert("Order placed successfully!");
-        // Close cart
         onClose();
       }
     } catch (error) {
@@ -156,16 +170,60 @@ const Cart = ({ onClose }: CartProps) => {
             >
               {/* Product Info */}
               <div style={{ flex: 1 }}>
-                <h3
+                <div
                   style={{
-                    fontSize: "16px",
-                    fontWeight: "600",
-                    margin: "0 0 8px 0",
-                    color: "#333",
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "flex-start",
+                    marginBottom: "8px",
                   }}
                 >
-                  {product.name}
-                </h3>
+                  <h3
+                    style={{
+                      fontSize: "16px",
+                      fontWeight: "600",
+                      margin: 0,
+                      color: "#333",
+                      flex: 1,
+                    }}
+                  >
+                    {product.name}
+                  </h3>
+
+                  {/* Remove Button */}
+                  <button
+                    onClick={() => handleRemoveFromCart(index)}
+                    style={{
+                      background: "none",
+                      border: "none",
+                      cursor: "pointer",
+                      padding: "4px",
+                      marginLeft: "8px",
+                      borderRadius: "4px",
+                      transition: "all 0.2s ease",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.backgroundColor = "#fee2e2";
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.backgroundColor = "transparent";
+                    }}
+                    title="Remove item"
+                  >
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                      <path
+                        d="M8 8L3 3M8 8L13 13M8 8L13 3M8 8L3 13"
+                        stroke="#dc2626"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
+                  </button>
+                </div>
 
                 <div style={{ marginBottom: "12px" }}>
                   <span
@@ -176,7 +234,7 @@ const Cart = ({ onClose }: CartProps) => {
                     }}
                   >
                     {product.prices[0]?.currencySymbol}
-                    {product.prices[0]?.amount}
+                    {product.prices[0]?.amount.toFixed(2)}
                   </span>
                 </div>
 
