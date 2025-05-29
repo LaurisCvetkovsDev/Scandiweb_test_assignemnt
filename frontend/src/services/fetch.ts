@@ -1,14 +1,11 @@
 import { ProductData } from "../types/ProductData";
 
 // Use the proper GraphQL endpoint
-const GRAPHQL_ENDPOINT = "http://localhost:8001";
+const GRAPHQL_ENDPOINT = "http://localhost:8002/graphql";
 
 // Helper function to make GraphQL requests
 const graphqlRequest = async (query: string, variables?: any): Promise<any> => {
   try {
-    console.log("Making GraphQL request to:", GRAPHQL_ENDPOINT);
-    console.log("Query:", query);
-    
     const response = await fetch(GRAPHQL_ENDPOINT, {
       method: "POST",
       headers: {
@@ -20,14 +17,11 @@ const graphqlRequest = async (query: string, variables?: any): Promise<any> => {
       }),
     });
 
-    console.log("Response status:", response.status);
-
     if (!response.ok) {
       throw new Error(`HTTP error! Status: ${response.status}`);
     }
 
     const result = await response.json();
-    console.log("GraphQL result received");
 
     if (result.errors) {
       console.error("GraphQL errors:", result.errors);
@@ -41,6 +35,7 @@ const graphqlRequest = async (query: string, variables?: any): Promise<any> => {
   }
 };
 
+// Fetch all products
 export const fetchProducts = async (): Promise<ProductData[]> => {
   const query = `
     {
@@ -49,10 +44,7 @@ export const fetchProducts = async (): Promise<ProductData[]> => {
         name
         description
         inStock
-        category {
-          id
-          name
-        }
+        category
         prices {
           currencyLabel
           currencySymbol
@@ -83,18 +75,16 @@ export const fetchProducts = async (): Promise<ProductData[]> => {
   }
 };
 
+// Fetch a single product by ID
 export const fetchProduct = async (id: string): Promise<ProductData | null> => {
   const query = `
     query GetProduct($id: String!) {
-      product(id: "${id}") {
+      product(id: $id) {
         id
         name
         description
         inStock
-        category {
-          id
-          name
-        }
+        category
         prices {
           currencyLabel
           currencySymbol
@@ -125,19 +115,16 @@ export const fetchProduct = async (id: string): Promise<ProductData | null> => {
   }
 };
 
-// GraphQL category filtering - now working!
+// Fetch products by category
 export const fetchProductsByCategory = async (category: string): Promise<ProductData[]> => {
   const query = `
     query GetProductsByCategory($category: String!) {
-      productsByCategory(category: "${category}") {
+      productsByCategory(category: $category) {
         id
         name
         description
         inStock
-        category {
-          id
-          name
-        }
+        category
         prices {
           currencyLabel
           currencySymbol
@@ -166,4 +153,19 @@ export const fetchProductsByCategory = async (category: string): Promise<Product
     console.error("Fetch products by category error:", error);
     return [];
   }
+};
+
+// Helper function to get available categories (optional)
+export const getAvailableCategories = (): string[] => {
+  return ['all', 'tech', 'clothes'];
+};
+
+// Helper function to format price display
+export const formatPrice = (price: { amount: number; currencySymbol: string }): string => {
+  return `${price.currencySymbol}${price.amount.toFixed(2)}`;
+};
+
+// Helper function to check if product is available
+export const isProductAvailable = (product: ProductData): boolean => {
+  return product.inStock;
 };

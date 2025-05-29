@@ -2,6 +2,8 @@
 
 namespace App\Resolvers;
 
+use Exception;
+
 class ProductResolver
 {
     private $productRepository;
@@ -14,6 +16,11 @@ class ProductResolver
             require_once __DIR__ . '/../repositories/ProductRepository.php';
 
             $dbConn = \Database::getInstance();
+
+            // Test database connection
+            $dbConn->query("SELECT 1");
+            error_log("Database connection successful");
+
             $this->productRepository = new \ProductRepository($dbConn);
         } catch (Exception $e) {
             error_log("ProductResolver constructor error: " . $e->getMessage());
@@ -24,7 +31,8 @@ class ProductResolver
     public function getAllProducts(): array
     {
         try {
-            return $this->productRepository->getAll();
+            $result = $this->productRepository->getAll();
+            return $result;
         } catch (Exception $e) {
             error_log("getAllProducts error: " . $e->getMessage());
             return [];

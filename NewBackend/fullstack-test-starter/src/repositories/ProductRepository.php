@@ -74,10 +74,7 @@ class ProductRepository
             'name' => $product['name'],
             'description' => $product['description'],
             'inStock' => (bool) $product['in_stock'],
-            'category' => [
-                'id' => $product['category'],
-                'name' => $product['category']
-            ],
+            'category' => $product['category'],
             'prices' => $prices,
             'gallery' => $gallery,
             'attributes' => $attributes
@@ -86,7 +83,7 @@ class ProductRepository
 
     private function getPrices(string $productId): array
     {
-        $query = "SELECT * FROM prices WHERE product_id = :product_id";
+        $query = "SELECT * FROM product_prices WHERE product_id = :product_id";
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(":product_id", $productId);
         $stmt->execute();
@@ -103,7 +100,7 @@ class ProductRepository
 
     private function getGallery(string $productId): array
     {
-        $query = "SELECT * FROM gallery WHERE product_id = :product_id";
+        $query = "SELECT * FROM product_gallery WHERE product_id = :product_id";
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(":product_id", $productId);
         $stmt->execute();
@@ -117,11 +114,12 @@ class ProductRepository
     private function getAttributes(string $productId): array
     {
         $query = "
-            SELECT a.name, a.type, ai.id as item_id, ai.displayValue, ai.value
-            FROM attributes a 
-            LEFT JOIN attribute_items ai ON a.id = ai.attribute_id 
-            WHERE a.product_id = :product_id
-            ORDER BY a.name, ai.id
+            SELECT pa.name, pa.type, 
+                   ai.item_id, ai.display_value as displayValue, ai.value
+            FROM product_attributes pa
+            LEFT JOIN attribute_items ai ON pa.attr_id = ai.attr_id AND pa.product_id = ai.product_id
+            WHERE pa.product_id = :product_id
+            ORDER BY pa.name, ai.item_id
         ";
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(":product_id", $productId);

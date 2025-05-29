@@ -43,7 +43,6 @@ export const useDataStore = create<DataStore>((set, get) => ({
 
   product: null,
   setProduct: async (id: string) => {
-    console.log(id)
     const data = await fetchProduct(id); 
     set({ product: data });
     

@@ -3,10 +3,7 @@ export type ProductData = {
     name: string;
     description: string;
     inStock: boolean;
-    category: {
-      id: string;
-      name: string;
-    };
+    category: string;
     prices: {
       currencyLabel: string;
       currencySymbol: string;

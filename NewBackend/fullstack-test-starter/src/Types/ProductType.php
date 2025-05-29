@@ -5,6 +5,10 @@ namespace App\Types;
 use GraphQL\Type\Definition\ObjectType;
 use GraphQL\Type\Definition\Type;
 
+require_once __DIR__ . '/PriceType.php';
+require_once __DIR__ . '/GalleryType.php';
+require_once __DIR__ . '/AttributeType.php';
+
 class ProductType extends ObjectType
 {
     public function __construct()
@@ -29,7 +33,7 @@ class ProductType extends ObjectType
                     'description' => 'Whether the product is in stock'
                 ],
                 'category' => [
-                    'type' => new CategoryType(),
+                    'type' => Type::string(),
                     'description' => 'The category of the product'
                 ],
                 'prices' => [

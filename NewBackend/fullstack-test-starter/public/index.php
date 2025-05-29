@@ -62,9 +62,6 @@ try {
             header('Content-Type: application/json');
             return json_encode(['message' => 'GraphQL endpoint ready. Use POST method.']);
         });
-        $r->options('/graphql', function () {
-            return json_encode(['message' => 'CORS OK']);
-        });
     });
 
     $routeInfo = $dispatcher->dispatch(

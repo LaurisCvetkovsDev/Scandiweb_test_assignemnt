@@ -1,6 +1,5 @@
 import { useDataStore } from "../store";
 import { useState } from "react";
-import { placeOrder } from "../services/fetch";
 
 interface CartProps {
   onClose: () => void;
@@ -65,13 +64,6 @@ const Cart = ({ onClose }: CartProps) => {
       const totalAmount = parseFloat(getTotalPrice());
 
       // Place order via GraphQL mutation
-      const result = await placeOrder(orderData, totalAmount);
-
-      if (result.success) {
-        setQuantities({});
-        alert("Order placed successfully!");
-        onClose();
-      }
     } catch (error) {
       console.error("Failed to place order:", error);
       alert("Failed to place order. Please try again.");
