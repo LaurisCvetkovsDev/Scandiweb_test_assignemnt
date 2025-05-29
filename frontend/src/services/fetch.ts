@@ -1,7 +1,7 @@
 import { ProductData } from "../types/ProductData";
 
-// Use the working GraphQL endpoint
-const GRAPHQL_ENDPOINT = "http://localhost/scandiFinal/NewBackend/working_graphql.php";
+// Use the proper GraphQL endpoint
+const GRAPHQL_ENDPOINT = "http://localhost:8001";
 
 // Helper function to make GraphQL requests
 const graphqlRequest = async (query: string, variables?: any): Promise<any> => {
@@ -165,26 +165,5 @@ export const fetchProductsByCategory = async (category: string): Promise<Product
   } catch (error) {
     console.error("Fetch products by category error:", error);
     return [];
-  }
-};
-
-// Place order mutation
-export const placeOrder = async (orderData: ProductData[], totalAmount: number): Promise<any> => {
-  const mutation = `
-    mutation PlaceOrder($orderData: String!, $totalAmount: Float!) {
-      placeOrder(orderData: $orderData, totalAmount: $totalAmount) {
-        id
-        success
-        message
-      }
-    }
-  `;
-
-  try {
-    const data = await graphqlRequest(mutation, { orderData, totalAmount });
-    return data.placeOrder;
-  } catch (error) {
-    console.error("Place order error:", error);
-    throw error;
   }
 };

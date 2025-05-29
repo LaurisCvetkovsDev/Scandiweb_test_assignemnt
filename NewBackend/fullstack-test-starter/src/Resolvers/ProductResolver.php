@@ -44,15 +44,7 @@ class ProductResolver
     public function getProductsByCategory(string $category): array
     {
         try {
-            $allProducts = $this->productRepository->getAll();
-
-            if ($category === 'all') {
-                return $allProducts;
-            }
-
-            return array_filter($allProducts, function ($product) use ($category) {
-                return $product['category'] && strtolower($product['category']['name']) === strtolower($category);
-            });
+            return $this->productRepository->getByCategory($category);
         } catch (Exception $e) {
             error_log("getProductsByCategory error: " . $e->getMessage());
             return [];

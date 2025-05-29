@@ -70,7 +70,6 @@ class GraphQL
                 ],
             ]);
 
-            // Since this is a read-only e-shop, we don't need mutations
             $schema = new Schema(
                 (new SchemaConfig())
                     ->setQuery($queryType)

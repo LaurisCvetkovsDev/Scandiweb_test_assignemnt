@@ -1,47 +1,29 @@
 <?php
 require_once __DIR__ . '/../models/Product.php';
-require_once __DIR__ . '/CategoryRepository.php';
-require_once __DIR__ . '/PriceRepository.php';
-require_once __DIR__ . '/GalleryRepository.php';
-require_once __DIR__ . '/AttributeRepository.php';
-require_once __DIR__ . '/AttributeItemRepository.php';
 
 class ProductRepository
 {
     private PDO $conn;
-    private CategoryRepository $categoryRepo;
-    private PriceRepository $priceRepo;
-    private GalleryRepository $imageRepo;
-    private AttributeRepository $attributeRepo;
-    private AttributeItemRepository $attributeItemRepo;
 
     public function __construct(PDO $conn)
     {
         $this->conn = $conn;
-        $this->categoryRepo = new CategoryRepository($conn);
-        $this->priceRepo = new PriceRepository($conn);
-        $this->imageRepo = new GalleryRepository($conn);
-        $this->attributeRepo = new AttributeRepository($conn);
-        $this->attributeItemRepo = new AttributeItemRepository($conn);
     }
 
-    // Получить все товары
     public function getAll(): array
     {
         $query = "SELECT * FROM products";
         $stmt = $this->conn->prepare($query);
         $stmt->execute();
+        $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-        $products = [];
-        foreach ($rows as $row) {
-            $products[] = $this->buildProductData($row);
+        $result = [];
+        foreach ($products as $product) {
+            $result[] = $this->buildProductData($product);
         }
-        return $products;
+        return $result;
     }
 
-    // Найти товар по id
     public function findById(string $id): ?array
     {
         $query = "SELECT * FROM products WHERE id = :id";
@@ -49,67 +31,133 @@ class ProductRepository
         $stmt->bindParam(":id", $id);
         $stmt->execute();
 
-        $row = $stmt->fetch(PDO::FETCH_ASSOC);
-        if (!$row) {
+        $product = $stmt->fetch(PDO::FETCH_ASSOC);
+        if (!$product) {
             return null;
         }
 
-        return $this->buildProductData($row);
+        return $this->buildProductData($product);
     }
 
-    // Собрать полный ProductData
-    private function buildProductData(array $row): array
+    public function getByCategory(string $category): array
     {
-        // Use getByProductId methods that return arrays instead of objects
-        $category = $this->categoryRepo->findByName($row['category']);
-        $prices = $this->priceRepo->getByProductId($row['id']);
-        $gallery = $this->imageRepo->getByProductId($row['id']);
-
-        // For attributes, we'll need to check what methods are actually available
-        $attributeData = [];
-        try {
-            $attributes = $this->attributeRepo->findByProductId($row['id']);
-            foreach ($attributes as $attr) {
-                $items = $this->attributeItemRepo->findByAttrIdAndProductId($attr->attr_id, $attr->product_id);
-                $itemData = [];
-                foreach ($items as $item) {
-                    $itemData[] = [
-                        'id' => $item->item_id,
-                        'value' => $item->value,
-                        'displayValue' => $item->display_value
-                    ];
-                }
-
-                $attributeData[] = [
-                    'name' => $attr->name,
-                    'type' => $attr->type,
-                    'items' => $itemData
-                ];
-            }
-        } catch (Exception $e) {
-            // If attributes fail, just return empty array
-            $attributeData = [];
+        if ($category === 'all') {
+            return $this->getAll();
         }
 
+        $query = "SELECT * FROM products WHERE category = :category";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(":category", $category);
+        $stmt->execute();
+        $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        $result = [];
+        foreach ($products as $product) {
+            $result[] = $this->buildProductData($product);
+        }
+        return $result;
+    }
+
+    private function buildProductData(array $product): array
+    {
+        // Get prices
+        $prices = $this->getPrices($product['id']);
+
+        // Get gallery images
+        $gallery = $this->getGallery($product['id']);
+
+        // Get attributes
+        $attributes = $this->getAttributes($product['id']);
+
         return [
-            'id' => $row['id'],
-            'name' => $row['name'],
-            'description' => $row['description'],
-            'inStock' => boolval($row['in_stock']),
-            'category' => $category ? ['id' => $category->id, 'name' => $category->name] : null,
-            'prices' => array_map(function ($price) {
-                return [
-                    'currencyLabel' => $price['currency_label'],
-                    'currencySymbol' => $price['currency_symbol'],
-                    'amount' => floatval($price['amount'])
-                ];
-            }, $prices),
-            'gallery' => array_map(function ($img) {
-                return ['url' => $img['image_url']];
-            }, $gallery),
-            'attributes' => $attributeData
+            'id' => $product['id'],
+            'name' => $product['name'],
+            'description' => $product['description'],
+            'inStock' => (bool) $product['in_stock'],
+            'category' => [
+                'id' => $product['category'],
+                'name' => $product['category']
+            ],
+            'prices' => $prices,
+            'gallery' => $gallery,
+            'attributes' => $attributes
         ];
     }
-}
 
+    private function getPrices(string $productId): array
+    {
+        $query = "SELECT * FROM prices WHERE product_id = :product_id";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(":product_id", $productId);
+        $stmt->execute();
+        $prices = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        return array_map(function ($price) {
+            return [
+                'amount' => (float) $price['amount'],
+                'currencyLabel' => $price['currency_label'],
+                'currencySymbol' => $price['currency_symbol']
+            ];
+        }, $prices);
+    }
+
+    private function getGallery(string $productId): array
+    {
+        $query = "SELECT * FROM gallery WHERE product_id = :product_id";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(":product_id", $productId);
+        $stmt->execute();
+        $gallery = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        return array_map(function ($image) {
+            return ['url' => $image['image_url']];
+        }, $gallery);
+    }
+
+    private function getAttributes(string $productId): array
+    {
+        $query = "
+            SELECT a.name, a.type, ai.id as item_id, ai.displayValue, ai.value
+            FROM attributes a 
+            LEFT JOIN attribute_items ai ON a.id = ai.attribute_id 
+            WHERE a.product_id = :product_id
+            ORDER BY a.name, ai.id
+        ";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(":product_id", $productId);
+        $stmt->execute();
+        $attributeData = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        // Group attributes by name
+        $attributes = [];
+        $currentAttr = null;
+
+        foreach ($attributeData as $row) {
+            if (!$currentAttr || $currentAttr['name'] !== $row['name']) {
+                if ($currentAttr) {
+                    $attributes[] = $currentAttr;
+                }
+                $currentAttr = [
+                    'name' => $row['name'],
+                    'type' => $row['type'],
+                    'items' => []
+                ];
+            }
+
+            if ($row['item_id']) {
+                $currentAttr['items'][] = [
+                    'id' => $row['item_id'],
+                    'displayValue' => $row['displayValue'],
+                    'value' => $row['value']
+                ];
+            }
+        }
+
+        if ($currentAttr) {
+            $attributes[] = $currentAttr;
+        }
+
+        return $attributes;
+    }
+}
 ?>
