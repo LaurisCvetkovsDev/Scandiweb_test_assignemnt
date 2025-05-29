@@ -1,7 +1,7 @@
 import { ProductData } from "../types/ProductData";
 
-// Use the proper GraphQL endpoint
-const GRAPHQL_ENDPOINT = "http://localhost:8002/graphql";
+// Use the WAMP server GraphQL endpoint
+const GRAPHQL_ENDPOINT = "http://localhost/scandiFinal/NewBackend/fullstack-test-starter/public/graphql";
 
 // Helper function to make GraphQL requests
 const graphqlRequest = async (query: string, variables?: any): Promise<any> => {

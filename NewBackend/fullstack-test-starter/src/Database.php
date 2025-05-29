@@ -9,14 +9,11 @@ class Database
     public static function getInstance(): PDO
     {
         if (self::$instance === null) {
-            // $host = 'scandidb.laucve1.dreamhosters.com';
-            // $db = 'pruductdb';
-            // $user = 'kvin2773';
-            // $pass = 'hmAFt9TXVCtf6Qs';
-            $host = 'localhost';
+            $host = 'scandidb.laucve1.dreamhosters.com';
             $db = 'pruductdb';
-            $user = 'root';
-            $pass = '';
+            $user = 'kvin2773';
+            $pass = 'hmAFt9TXVCtf6Qs';
+
             $charset = 'utf8mb4';
             $dsn = "mysql:host=$host;dbname=$db;charset=$charset";
             $options = [
