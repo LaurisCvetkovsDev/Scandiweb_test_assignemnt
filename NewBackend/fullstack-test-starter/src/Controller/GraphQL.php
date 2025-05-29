@@ -10,65 +10,98 @@ use GraphQL\Type\SchemaConfig;
 use RuntimeException;
 use Throwable;
 
-class GraphQL {
-    static public function handle() {
+require_once __DIR__ . '/../Types/ProductType.php';
+require_once __DIR__ . '/../Types/CategoryType.php';
+require_once __DIR__ . '/../Types/PriceType.php';
+require_once __DIR__ . '/../Types/GalleryType.php';
+require_once __DIR__ . '/../Types/AttributeType.php';
+require_once __DIR__ . '/../Types/AttributeItemType.php';
+require_once __DIR__ . '/../Resolvers/ProductResolver.php';
+
+use App\Types\ProductType;
+use App\Resolvers\ProductResolver;
+
+class GraphQL
+{
+    static public function handle()
+    {
+        // Set content type for JSON response
+        header('Content-Type: application/json; charset=UTF-8');
+
         try {
+            $productResolver = new ProductResolver();
+
             $queryType = new ObjectType([
                 'name' => 'Query',
                 'fields' => [
-                    'echo' => [
-                        'type' => Type::string(),
+                    'products' => [
+                        'type' => Type::listOf(new ProductType()),
+                        'description' => 'Get all products',
+                        'resolve' => function () use ($productResolver) {
+                            return $productResolver->getAllProducts();
+                        },
+                    ],
+                    'product' => [
+                        'type' => new ProductType(),
+                        'description' => 'Get a single product by ID',
                         'args' => [
-                            'message' => ['type' => Type::string()],
+                            'id' => [
+                                'type' => Type::nonNull(Type::string()),
+                                'description' => 'The ID of the product'
+                            ]
                         ],
-                        'resolve' => static fn ($rootValue, array $args): string => $rootValue['prefix'] . $args['message'],
+                        'resolve' => function ($rootValue, array $args) use ($productResolver) {
+                            return $productResolver->getProductById($args['id']);
+                        },
+                    ],
+                    'productsByCategory' => [
+                        'type' => Type::listOf(new ProductType()),
+                        'description' => 'Get products by category',
+                        'args' => [
+                            'category' => [
+                                'type' => Type::nonNull(Type::string()),
+                                'description' => 'The category name (all, tech, clothes)'
+                            ]
+                        ],
+                        'resolve' => function ($rootValue, array $args) use ($productResolver) {
+                            return $productResolver->getProductsByCategory($args['category']);
+                        },
                     ],
                 ],
             ]);
-        
-            $mutationType = new ObjectType([
-                'name' => 'Mutation',
-                'fields' => [
-                    'sum' => [
-                        'type' => Type::int(),
-                        'args' => [
-                            'x' => ['type' => Type::int()],
-                            'y' => ['type' => Type::int()],
-                        ],
-                        'resolve' => static fn ($calc, array $args): int => $args['x'] + $args['y'],
-                    ],
-                ],
-            ]);
-        
-            // See docs on schema options:
-            // https://webonyx.github.io/graphql-php/schema-definition/#configuration-options
+
+            // Since this is a read-only e-shop, we don't need mutations
             $schema = new Schema(
                 (new SchemaConfig())
-                ->setQuery($queryType)
-                ->setMutation($mutationType)
+                    ->setQuery($queryType)
             );
-        
+
             $rawInput = file_get_contents('php://input');
             if ($rawInput === false) {
                 throw new RuntimeException('Failed to get php://input');
             }
-        
+
             $input = json_decode($rawInput, true);
-            $query = $input['query'];
+            if (json_last_error() !== JSON_ERROR_NONE) {
+                throw new RuntimeException('Invalid JSON input');
+            }
+
+            $query = $input['query'] ?? '';
             $variableValues = $input['variables'] ?? null;
-        
-            $rootValue = ['prefix' => 'You said: '];
-            $result = GraphQLBase::executeQuery($schema, $query, $rootValue, null, $variableValues);
+
+            $result = GraphQLBase::executeQuery($schema, $query, null, null, $variableValues);
             $output = $result->toArray();
         } catch (Throwable $e) {
             $output = [
-                'error' => [
-                    'message' => $e->getMessage(),
+                'errors' => [
+                    [
+                        'message' => $e->getMessage(),
+                        'trace' => $e->getTraceAsString()
+                    ]
                 ],
             ];
         }
 
-        header('Content-Type: application/json; charset=UTF-8');
         return json_encode($output);
     }
 }

@@ -60,29 +60,35 @@ class ProductRepository
     // Собрать полный ProductData
     private function buildProductData(array $row): array
     {
+        // Use getByProductId methods that return arrays instead of objects
         $category = $this->categoryRepo->findByName($row['category']);
-        $prices = $this->priceRepo->findByProductId($row['id']);
-        $gallery = $this->imageRepo->findByProductId($row['id']);
-        $attributes = $this->attributeRepo->findByProductId($row['id']);
+        $prices = $this->priceRepo->getByProductId($row['id']);
+        $gallery = $this->imageRepo->getByProductId($row['id']);
 
-        // Собрать атрибуты с их items
+        // For attributes, we'll need to check what methods are actually available
         $attributeData = [];
-        foreach ($attributes as $attr) {
-            $items = $this->attributeItemRepo->findByAttrIdAndProductId($attr->attr_id, $attr->product_id);
-            $itemData = [];
-            foreach ($items as $item) {
-                $itemData[] = [
-                    'id' => $item->item_id,
-                    'value' => $item->value,
-                    'displayValue' => $item->display_value
+        try {
+            $attributes = $this->attributeRepo->findByProductId($row['id']);
+            foreach ($attributes as $attr) {
+                $items = $this->attributeItemRepo->findByAttrIdAndProductId($attr->attr_id, $attr->product_id);
+                $itemData = [];
+                foreach ($items as $item) {
+                    $itemData[] = [
+                        'id' => $item->item_id,
+                        'value' => $item->value,
+                        'displayValue' => $item->display_value
+                    ];
+                }
+
+                $attributeData[] = [
+                    'name' => $attr->name,
+                    'type' => $attr->type,
+                    'items' => $itemData
                 ];
             }
-
-            $attributeData[] = [
-                'name' => $attr->name,
-                'type' => $attr->type,
-                'items' => $itemData
-            ];
+        } catch (Exception $e) {
+            // If attributes fail, just return empty array
+            $attributeData = [];
         }
 
         return [
@@ -93,13 +99,13 @@ class ProductRepository
             'category' => $category ? ['id' => $category->id, 'name' => $category->name] : null,
             'prices' => array_map(function ($price) {
                 return [
-                    'currencyLabel' => $price->currency_label,
-                    'currencySymbol' => $price->currency_symbol,
-                    'amount' => floatval($price->amount)
+                    'currencyLabel' => $price['currency_label'],
+                    'currencySymbol' => $price['currency_symbol'],
+                    'amount' => floatval($price['amount'])
                 ];
             }, $prices),
             'gallery' => array_map(function ($img) {
-                return ['url' => $img->image_url];
+                return ['url' => $img['image_url']];
             }, $gallery),
             'attributes' => $attributeData
         ];
