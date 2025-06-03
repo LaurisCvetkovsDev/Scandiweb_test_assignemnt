@@ -1,7 +1,7 @@
 import { ProductData } from "../types/ProductData";
 
-// Use the WAMP server GraphQL endpoint
-const GRAPHQL_ENDPOINT = "http://localhost/scandiFinal/NewBackend/fullstack-test-starter/public/graphql";
+// Use the remote server GraphQL endpoint
+const GRAPHQL_ENDPOINT = "https://laucve1.dreamhosters.com/NewBackend/fullstack-test-starter/public/index.php";
 
 // Helper function to make GraphQL requests
 const graphqlRequest = async (query: string, variables?: any): Promise<any> => {

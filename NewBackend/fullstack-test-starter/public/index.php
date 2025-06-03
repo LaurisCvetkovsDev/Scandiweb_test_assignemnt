@@ -22,7 +22,10 @@ try {
 
     // Parse the request URI to remove the base path
     $requestUri = $_SERVER['REQUEST_URI'];
-    $basePath = '/scandiFinal/NewBackend/fullstack-test-starter/public';
+
+    // Auto-detect base path based on script name
+    $scriptName = $_SERVER['SCRIPT_NAME']; // e.g., "/scandiFinal/NewBackend/fullstack-test-starter/public/index.php"
+    $basePath = dirname($scriptName); // e.g., "/scandiFinal/NewBackend/fullstack-test-starter/public"
     $path = str_replace($basePath, '', $requestUri);
 
     // Remove query string if present
