@@ -55,21 +55,21 @@ const Cart = ({ onClose }: CartProps) => {
     if (cart.length === 0 || isPlacingOrder) return;
 
     setIsPlacingOrder(true);
-    try {
-      const orderData = cart.map((product, index) => ({
-        ...product,
-        quantity: getQuantity(index),
-      }));
+    // try {
+    //   const orderData = cart.map((product, index) => ({
+    //     ...product,
+    //     quantity: getQuantity(index),
+    //   }));
 
-      const totalAmount = parseFloat(getTotalPrice());
+    //   const totalAmount = parseFloat(getTotalPrice());
 
-      // Place order via GraphQL mutation
-    } catch (error) {
-      console.error("Failed to place order:", error);
-      alert("Failed to place order. Please try again.");
-    } finally {
-      setIsPlacingOrder(false);
-    }
+    //   // Place order via GraphQL mutation
+    // } catch (error) {
+    //   console.error("Failed to place order:", error);
+    //   alert("Failed to place order. Please try again.");
+    // } finally {
+    //   setIsPlacingOrder(false);
+    // }
   };
 
   const toKebabCase = (str: string) => {
