@@ -1,6 +1,7 @@
 import { ProductData } from "../types/ProductData";
 
 // Use the remote server GraphQL endpoint
+// const GRAPHQL_ENDPOINT = "http://localhost/scandiFinal/NewBackend/fullstack-test-starter/public/index.php";
 const GRAPHQL_ENDPOINT = "https://laucve1.dreamhosters.com/NewBackend/fullstack-test-starter/public/index.php";
 
 // Helper function to make GraphQL requests
@@ -168,4 +169,56 @@ export const formatPrice = (price: { amount: number; currencySymbol: string }): 
 // Helper function to check if product is available
 export const isProductAvailable = (product: ProductData): boolean => {
   return product.inStock;
+};
+
+// Create an order
+export const createOrder = async (orderData: {
+  total_amount: number;
+  currency: string;
+  items: Array<{
+    product_id: string;
+    quantity: number;
+    price_at_time: number;
+    currency: string;
+    attributes?: Array<{
+      name: string;
+      type: string;
+      selected_value: string;
+      selected_display_value: string;
+    }>;
+  }>;
+}): Promise<any> => {
+  const mutation = `
+    mutation CreateOrder($input: CreateOrderInput!) {
+      createOrder(input: $input) {
+        id
+        created_at
+        total_amount
+        currency
+        status
+        items {
+          id
+          product_id
+          product_name
+          quantity
+          price_at_time
+          currency
+          attributes {
+            name
+            type
+            selected_value
+            selected_display_value
+          }
+        }
+      }
+    }
+  `;
+
+  try {
+    const data = await graphqlRequest(mutation, { input: orderData });
+    return data.createOrder;
+  } catch (error) {
+    console.error("Create order error:", error);
+    throw error;
+  }
 };

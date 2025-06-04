@@ -1,5 +1,6 @@
 import { useDataStore } from "../store";
 import { useState } from "react";
+import { createOrder } from "../services/fetch";
 
 interface CartProps {
   onClose: () => void;
@@ -52,24 +53,49 @@ const Cart = ({ onClose }: CartProps) => {
   };
 
   const handlePlaceOrder = async () => {
-    if (cart.length === 0 || isPlacingOrder) return;
+    if (cart.length === 0) return;
 
-    setIsPlacingOrder(true);
-    // try {
-    //   const orderData = cart.map((product, index) => ({
-    //     ...product,
-    //     quantity: getQuantity(index),
-    //   }));
+    try {
+      setIsPlacingOrder(true);
 
-    //   const totalAmount = parseFloat(getTotalPrice());
+      // Prepare order items
+      const orderItems = cart.map((item, index) => ({
+        product_id: item.id,
+        quantity: getQuantity(index),
+        price_at_time: item.prices[0]?.amount || 0,
+        currency: "USD",
+        attributes: item.attributes?.map((attr) => {
+          // Since all items are selected in cart, we'll use the first item
+          const selectedItem = attr.items[0];
+          return {
+            name: attr.name,
+            type: attr.type,
+            selected_value: selectedItem.id,
+            selected_display_value:
+              selectedItem.displayValue || selectedItem.value,
+          };
+        }),
+      }));
 
-    //   // Place order via GraphQL mutation
-    // } catch (error) {
-    //   console.error("Failed to place order:", error);
-    //   alert("Failed to place order. Please try again.");
-    // } finally {
-    //   setIsPlacingOrder(false);
-    // }
+      // Create order
+      const order = await createOrder({
+        total_amount: parseFloat(getTotalPrice()),
+        currency: "USD",
+        items: orderItems,
+      });
+
+      // Clear cart after successful order
+      removeFromCart(0);
+      setQuantities({});
+
+      // Show success message
+      alert("Order placed successfully! Order ID: " + order.id);
+    } catch (error) {
+      console.error("Error placing order:", error);
+      alert("Failed to place order. Please try again.");
+    } finally {
+      setIsPlacingOrder(false);
+    }
   };
 
   const toKebabCase = (str: string) => {

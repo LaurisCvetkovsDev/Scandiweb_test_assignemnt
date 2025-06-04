@@ -10,7 +10,7 @@ class Database
     {
         if (self::$instance === null) {
             $host = 'scandidb.laucve1.dreamhosters.com';
-            $db = 'pruductdb';
+            $db = 'scandidb';
             $user = 'kvin2773';
             $pass = 'hmAFt9TXVCtf6Qs';
 

@@ -6,14 +6,17 @@ use Exception;
 use GraphQL\GraphQL as GraphQLBase;
 use GraphQL\Type\Definition\ObjectType;
 use GraphQL\Type\Definition\Type;
+use GraphQL\Type\Definition\InputObjectType;
 use GraphQL\Type\Schema;
 use GraphQL\Type\SchemaConfig;
 use RuntimeException;
 use Throwable;
 
 require_once __DIR__ . '/../Resolvers/ProductResolver.php';
+require_once __DIR__ . '/../Resolvers/OrderResolver.php';
 
 use App\Resolvers\ProductResolver;
+use App\Resolvers\OrderResolver;
 
 class GraphQL
 {
@@ -74,6 +77,44 @@ class GraphQL
                 ]
             ]);
 
+            // Add these types before the QueryType definition
+            $orderItemAttributeType = new ObjectType([
+                'name' => 'OrderItemAttribute',
+                'fields' => [
+                    'id' => ['type' => Type::string()],
+                    'name' => ['type' => Type::string()],
+                    'type' => ['type' => Type::string()],
+                    'selected_value' => ['type' => Type::string()],
+                    'selected_display_value' => ['type' => Type::string()]
+                ]
+            ]);
+
+            $orderItemType = new ObjectType([
+                'name' => 'OrderItem',
+                'fields' => [
+                    'id' => ['type' => Type::string()],
+                    'product_id' => ['type' => Type::string()],
+                    'product_name' => ['type' => Type::string()],
+                    'product_description' => ['type' => Type::string()],
+                    'quantity' => ['type' => Type::int()],
+                    'price_at_time' => ['type' => Type::float()],
+                    'currency' => ['type' => Type::string()],
+                    'attributes' => ['type' => Type::listOf($orderItemAttributeType)]
+                ]
+            ]);
+
+            $orderType = new ObjectType([
+                'name' => 'Order',
+                'fields' => [
+                    'id' => ['type' => Type::string()],
+                    'created_at' => ['type' => Type::string()],
+                    'total_amount' => ['type' => Type::float()],
+                    'currency' => ['type' => Type::string()],
+                    'status' => ['type' => Type::string()],
+                    'items' => ['type' => Type::listOf($orderItemType)]
+                ]
+            ]);
+
             $queryType = new ObjectType([
                 'name' => 'Query',
                 'fields' => [
@@ -125,12 +166,81 @@ class GraphQL
                             }
                         },
                     ],
+                    'order' => [
+                        'type' => $orderType,
+                        'args' => [
+                            'id' => ['type' => Type::nonNull(Type::string())]
+                        ],
+                        'resolve' => function ($root, $args) {
+                            $resolver = new \App\Resolvers\OrderResolver();
+                            return $resolver->getOrder($args['id']);
+                        }
+                    ]
                 ],
+            ]);
+
+            // Add these to the MutationType fields
+            $mutationType = new ObjectType([
+                'name' => 'Mutation',
+                'fields' => [
+                    'createOrder' => [
+                        'type' => $orderType,
+                        'args' => [
+                            'input' => [
+                                'type' => new InputObjectType([
+                                    'name' => 'CreateOrderInput',
+                                    'fields' => [
+                                        'total_amount' => ['type' => Type::nonNull(Type::float())],
+                                        'currency' => ['type' => Type::string()],
+                                        'items' => [
+                                            'type' => Type::nonNull(Type::listOf(new InputObjectType([
+                                                'name' => 'OrderItemInput',
+                                                'fields' => [
+                                                    'product_id' => ['type' => Type::nonNull(Type::string())],
+                                                    'quantity' => ['type' => Type::nonNull(Type::int())],
+                                                    'price_at_time' => ['type' => Type::nonNull(Type::float())],
+                                                    'currency' => ['type' => Type::string()],
+                                                    'attributes' => [
+                                                        'type' => Type::listOf(new InputObjectType([
+                                                            'name' => 'OrderItemAttributeInput',
+                                                            'fields' => [
+                                                                'name' => ['type' => Type::nonNull(Type::string())],
+                                                                'type' => ['type' => Type::nonNull(Type::string())],
+                                                                'selected_value' => ['type' => Type::nonNull(Type::string())],
+                                                                'selected_display_value' => ['type' => Type::nonNull(Type::string())]
+                                                            ]
+                                                        ]))
+                                                    ]
+                                                ]
+                                            ])))
+                                        ]
+                                    ]
+                                ])
+                            ]
+                        ],
+                        'resolve' => function ($root, $args) {
+                            $resolver = new \App\Resolvers\OrderResolver();
+                            return $resolver->createOrder($args['input']);
+                        }
+                    ],
+                    'updateOrderStatus' => [
+                        'type' => Type::boolean(),
+                        'args' => [
+                            'id' => ['type' => Type::nonNull(Type::string())],
+                            'status' => ['type' => Type::nonNull(Type::string())]
+                        ],
+                        'resolve' => function ($root, $args) {
+                            $resolver = new \App\Resolvers\OrderResolver();
+                            return $resolver->updateOrderStatus($args['id'], $args['status']);
+                        }
+                    ]
+                ]
             ]);
 
             $schema = new Schema(
                 (new SchemaConfig())
                     ->setQuery($queryType)
+                    ->setMutation($mutationType)
             );
 
             $rawInput = file_get_contents('php://input');

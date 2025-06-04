@@ -48,7 +48,7 @@ const ProductGrid = ({ category }: ProductGridProps) => {
   const getCategoryTitle = () => {
     if (category === "clothes") return "CLOTHES";
     if (category === "tech") return "TECH";
-    return "All";
+    return "ALL";
   };
 
   const toKebabCase = (str: string) => {
