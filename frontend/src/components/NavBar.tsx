@@ -19,7 +19,7 @@ const NavBar = () => {
           borderBottom: "1px solid #f0f0f0",
           position: "sticky",
           top: 0,
-          zIndex: 1000,
+          zIndex: 2001,
         }}
       >
         <div
@@ -96,7 +96,7 @@ const NavBar = () => {
           <div>
             <button
               data-testid="cart-btn"
-              onClick={() => setCartOpen(true)}
+              onClick={() => setCartOpen(!isCartOpen)}
               style={{
                 background: "none",
                 border: "none",
