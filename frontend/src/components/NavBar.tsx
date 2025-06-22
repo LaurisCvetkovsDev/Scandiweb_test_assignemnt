@@ -34,6 +34,25 @@ const NavBar = () => {
           {/* Left Navigation */}
           <div style={{ display: "flex", gap: "40px", alignItems: "center" }}>
             <Link
+              to="/"
+              data-testid={
+                isActive("/") ? "active-category-link" : "category-link"
+              }
+              style={{
+                textDecoration: "none",
+                color: isActive("/") ? "#4ade80" : "#333",
+                fontWeight: isActive("/") ? "600" : "400",
+                fontSize: "16px",
+                borderBottom: isActive("/")
+                  ? "2px solid #4ade80"
+                  : "2px solid transparent",
+                paddingBottom: "8px",
+                transition: "all 0.2s ease",
+              }}
+            >
+              ALL
+            </Link>
+            <Link
               to="/clothes"
               data-testid={
                 isActive("/clothes") ? "active-category-link" : "category-link"
@@ -70,25 +89,6 @@ const NavBar = () => {
               }}
             >
               TECH
-            </Link>
-            <Link
-              to="/"
-              data-testid={
-                isActive("/") ? "active-category-link" : "category-link"
-              }
-              style={{
-                textDecoration: "none",
-                color: isActive("/") ? "#4ade80" : "#333",
-                fontWeight: isActive("/") ? "600" : "400",
-                fontSize: "16px",
-                borderBottom: isActive("/")
-                  ? "2px solid #4ade80"
-                  : "2px solid transparent",
-                paddingBottom: "8px",
-                transition: "all 0.2s ease",
-              }}
-            >
-              ALL
             </Link>
           </div>
 

@@ -17,7 +17,7 @@ function App() {
             <Route path="/" element={<AllGrid />} />
             <Route path="tech" element={<TechGrid />} />
             <Route path="clothes" element={<ClothesGrid />} />
-            <Route path="Detail/:id" element={<Detail />} />
+            <Route path="product/:id" element={<Detail />} />
           </Route>
         </Routes>
       </Router>

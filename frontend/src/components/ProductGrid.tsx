@@ -97,18 +97,32 @@ const ProductGrid = ({ category }: ProductGridProps) => {
                   e.currentTarget.style.transform = "translateY(-4px)";
                   e.currentTarget.style.boxShadow =
                     "0 8px 25px rgba(0,0,0,0.1)";
+                  // Показываем кнопку Quick Shop
+                  const cartButton = e.currentTarget.querySelector(
+                    ".product-cart-button"
+                  ) as HTMLElement;
+                  if (cartButton) {
+                    cartButton.style.opacity = "1";
+                  }
                 }
               }}
               onMouseLeave={(e) => {
                 if (item.inStock) {
                   e.currentTarget.style.transform = "translateY(0)";
                   e.currentTarget.style.boxShadow = "none";
+                  // Скрываем кнопку Quick Shop
+                  const cartButton = e.currentTarget.querySelector(
+                    ".product-cart-button"
+                  ) as HTMLElement;
+                  if (cartButton) {
+                    cartButton.style.opacity = "0";
+                  }
                 }
               }}
             >
               {item.inStock ? (
                 <Link
-                  to={`/Detail/${item.id}`}
+                  to={`/product/${item.id}`}
                   style={{
                     textDecoration: "none",
                     color: "inherit",
@@ -212,12 +226,12 @@ const ProductGrid = ({ category }: ProductGridProps) => {
                   </div>
                 </Link>
               ) : (
-                <div
+                <Link
+                  to={`/product/${item.id}`}
                   style={{
                     textDecoration: "none",
                     color: "inherit",
                     display: "block",
-                    cursor: "not-allowed",
                   }}
                 >
                   <div
@@ -282,7 +296,7 @@ const ProductGrid = ({ category }: ProductGridProps) => {
                       {item.prices[0]?.amount.toFixed(2)}
                     </p>
                   </div>
-                </div>
+                </Link>
               )}
             </div>
           ))}
