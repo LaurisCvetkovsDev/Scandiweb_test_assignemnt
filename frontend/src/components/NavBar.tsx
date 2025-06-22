@@ -1,12 +1,12 @@
 import { Link, useLocation } from "react-router-dom";
 import Cart from "./cart.tsx";
-import { useState } from "react";
 import { useDataStore } from "../store";
 
 const NavBar = () => {
   const location = useLocation();
-  const [cartOpen, setCartOpen] = useState(false);
   const cart = useDataStore((state) => state.cart);
+  const cartOpen = useDataStore((state) => state.cartOpen);
+  const setCartOpen = useDataStore((state) => state.setCartOpen);
 
   const isActive = (path: string) => location.pathname === path;
 
@@ -37,7 +37,10 @@ const NavBar = () => {
           }}
         >
           {/* Left Navigation */}
-          <div style={{ display: "flex", gap: "40px", alignItems: "center" }}>
+          <div
+            data-testid="category-links"
+            style={{ display: "flex", gap: "40px", alignItems: "center" }}
+          >
             <Link
               to="/"
               data-testid="category-link"
@@ -92,7 +95,7 @@ const NavBar = () => {
           </div>
 
           {/* Right Cart */}
-          <div>
+          <div data-testid="cart-container">
             <button
               data-testid="cart-btn"
               onClick={() => setCartOpen(true)}

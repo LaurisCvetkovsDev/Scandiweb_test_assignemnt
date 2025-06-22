@@ -10,11 +10,12 @@ const Detail = () => {
   const product = useDataStore((state) => state.product);
   const setProduct = useDataStore((state) => state.setProduct);
   const addToCart = useDataStore((state) => state.addToCart);
+  const cartOpen = useDataStore((state) => state.cartOpen);
+  const setCartOpen = useDataStore((state) => state.setCartOpen);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [selectedAttributes, setSelectedAttributes] = useState<{
     [key: string]: string;
   }>({});
-  const [cartOpen, setCartOpen] = useState(false);
 
   useEffect(() => {
     if (id) {
@@ -269,6 +270,7 @@ const Detail = () => {
           }}
         >
           <h1
+            data-testid="product-name"
             style={{
               fontSize: "30px",
               fontWeight: "600",
@@ -364,7 +366,10 @@ const Detail = () => {
             >
               Price:
             </h3>
-            <div style={{ fontSize: "24px", fontWeight: "700", color: "#333" }}>
+            <div
+              data-testid="product-price"
+              style={{ fontSize: "24px", fontWeight: "700", color: "#333" }}
+            >
               {product.prices.map((price, index) => (
                 <span key={index}>
                   {price.currency.symbol}

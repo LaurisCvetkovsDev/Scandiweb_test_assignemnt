@@ -12,6 +12,7 @@ const ProductGrid = ({ category }: ProductGridProps) => {
   const loading = useDataStore((state) => state.loading);
   const setAllProducts = useDataStore((state) => state.setAllProducts);
   const addToCart = useDataStore((state) => state.addToCart);
+  const setCartOpen = useDataStore((state) => state.setCartOpen);
 
   useEffect(() => {
     console.log("ProductGrid: Starting to load products");
@@ -62,8 +63,8 @@ const ProductGrid = ({ category }: ProductGridProps) => {
     addToCart(cartItem);
 
     // Открываем корзину после добавления
-    // Это можно сделать через глобальное состояние или событие
-    console.log("Item added to cart, should open cart overlay");
+    setCartOpen(true);
+    console.log("Item added to cart, cart overlay opened");
   };
 
   const getCategoryTitle = () => {

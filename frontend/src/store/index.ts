@@ -15,6 +15,9 @@ type DataStore = {
 
   product: ProductData | null;
   setProduct: (id: string) => Promise<void>;
+
+  cartOpen: boolean;
+  setCartOpen: (open: boolean) => void;
 };
 
 export const useDataStore = create<DataStore>((set, get) => ({
@@ -49,5 +52,10 @@ export const useDataStore = create<DataStore>((set, get) => ({
     const data = await fetchProduct(id); 
     set({ product: data });
     
+  },
+
+  cartOpen: false,
+  setCartOpen: (open: boolean) => {
+    set({ cartOpen: open });
   },
 }));
