@@ -166,7 +166,7 @@ const NavBar = () => {
 
       {/* Cart Overlay */}
       {cartOpen && (
-        <>
+        <div data-testid="cart-overlay">
           {/* Backdrop */}
           <div
             style={{
@@ -197,7 +197,7 @@ const NavBar = () => {
           >
             <Cart onClose={() => setCartOpen(false)} />
           </div>
-        </>
+        </div>
       )}
     </>
   );

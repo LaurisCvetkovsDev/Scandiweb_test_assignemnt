@@ -113,11 +113,6 @@ const Detail = () => {
       .replace(/&quot;/g, '"');
   };
 
-  // Check if all required attributes are selected
-  const allAttributesSelected = product.attributes.every(
-    (attr) => selectedAttributes[attr.name]
-  );
-
   return (
     <div
       style={{
@@ -386,11 +381,10 @@ const Detail = () => {
               addToCart(setToCartItem());
               setCartOpen(true);
             }}
-            disabled={!product.inStock || !allAttributesSelected}
+            disabled={!product.inStock}
             style={{
               width: "100%",
-              backgroundColor:
-                product.inStock && allAttributesSelected ? "#4ade80" : "#ccc",
+              backgroundColor: product.inStock ? "#4ade80" : "#ccc",
               color: "white",
               padding: "16px",
               fontSize: "16px",
@@ -399,10 +393,7 @@ const Detail = () => {
               borderRadius: "4px",
               marginBottom: "24px",
               border: "none",
-              cursor:
-                product.inStock && allAttributesSelected
-                  ? "pointer"
-                  : "not-allowed",
+              cursor: product.inStock ? "pointer" : "not-allowed",
             }}
           >
             {!product.inStock ? "Out of Stock" : "Add to Cart"}
