@@ -34,7 +34,7 @@ const NavBar = () => {
           }}
         >
           {/* Left Navigation */}
-          <div>
+          <div style={{ display: "flex", gap: "20px" }}>
             <Link to="/" data-testid="category-link">
               ALL
             </Link>

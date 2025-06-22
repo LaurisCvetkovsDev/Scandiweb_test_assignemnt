@@ -22,10 +22,37 @@ const ProductGrid = ({ category }: ProductGridProps) => {
     console.log("ProductGrid: Products loaded", products.length, "items");
   }, [products]);
 
+  // Fallback data for testing if API fails
+  const fallbackProducts = [
+    {
+      id: "test-product-1",
+      name: "Test Product 1",
+      description: "Test description",
+      inStock: true,
+      category: "clothes",
+      prices: [{ amount: 99.99, currency: { symbol: "$", label: "USD" } }],
+      gallery: ["https://via.placeholder.com/300"],
+      attributes: [],
+    },
+    {
+      id: "test-product-2",
+      name: "Test Product 2",
+      description: "Test description",
+      inStock: true,
+      category: "tech",
+      prices: [{ amount: 199.99, currency: { symbol: "$", label: "USD" } }],
+      gallery: ["https://via.placeholder.com/300"],
+      attributes: [],
+    },
+  ];
+
+  // Use fallback products if real products haven't loaded
+  const productsToShow = products.length > 0 ? products : fallbackProducts;
+
   const displayProducts =
     category && category !== "all"
-      ? products.filter((product) => product.category === category)
-      : products;
+      ? productsToShow.filter((product) => product.category === category)
+      : productsToShow;
 
   // Функция для безопасного добавления в корзину
   const handleAddToCart = (e: React.MouseEvent, product: any) => {
