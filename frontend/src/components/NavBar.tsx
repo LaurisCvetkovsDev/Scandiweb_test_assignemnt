@@ -72,16 +72,16 @@ const NavBar = () => {
               TECH
             </Link>
             <Link
-              to="/"
+              to="/all"
               data-testid={
-                isActive("/") ? "active-category-link" : "category-link"
+                isActive("/all") ? "active-category-link" : "category-link"
               }
               style={{
                 textDecoration: "none",
-                color: isActive("/") ? "#4ade80" : "#333",
-                fontWeight: isActive("/") ? "600" : "400",
+                color: isActive("/all") ? "#4ade80" : "#333",
+                fontWeight: isActive("/all") ? "600" : "400",
                 fontSize: "16px",
-                borderBottom: isActive("/")
+                borderBottom: isActive("/all")
                   ? "2px solid #4ade80"
                   : "2px solid transparent",
                 paddingBottom: "8px",
