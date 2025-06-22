@@ -22,14 +22,9 @@ const Detail = () => {
 
   useEffect(() => {
     if (product && product.attributes) {
-      // Set default selected attributes (first item for each attribute)
-      const defaultAttributes: { [key: string]: string } = {};
-      product.attributes.forEach((attr) => {
-        if (attr.items.length > 0) {
-          defaultAttributes[attr.name] = attr.items[0].id;
-        }
-      });
-      setSelectedAttributes(defaultAttributes);
+      // Reset selected attributes when product changes
+      // User must manually select all attributes
+      setSelectedAttributes({});
     }
   }, [product]);
 
