@@ -1,10 +1,8 @@
 import { ProductData } from "../types/ProductData";
 
-// Use the remote server GraphQL endpoint
-// const GRAPHQL_ENDPOINT = "http://localhost/scandiFinal/NewBackend/fullstack-test-starter/public/index.php";
-const GRAPHQL_ENDPOINT = "https://laucve1.dreamhosters.com/NewBackend/fullstack-test-starter/public/index.php";
+//const GRAPHQL_ENDPOINT = "http://localhost/scandiFinal/NewBackend2/fullstack-test-starter/public/";
+const GRAPHQL_ENDPOINT = "https://laucve1.dreamhosters.com/NewBackend2/fullstack-test-starter/public/";
 
-// Helper function to make GraphQL requests
 const graphqlRequest = async (query: string, variables?: any): Promise<any> => {
   try {
     const response = await fetch(GRAPHQL_ENDPOINT, {
@@ -36,25 +34,53 @@ const graphqlRequest = async (query: string, variables?: any): Promise<any> => {
   }
 };
 
-// Fetch all products
+// Получить все категории
+export const fetchProduct = async (id: string): Promise<ProductData | null> => {
+  try {
+    const products = await fetchProducts();
+    const product = products.find(p => p.id === id);
+    return product || null;
+  } catch (error) {
+    console.error("Fetch product error:", error);
+    return null;
+  }
+};
+
+// Получить продукты по категории (фильтруем на фронтенде)
+export const fetchProductsByCategory = async (category: string): Promise<ProductData[]> => {
+  try {
+    const products = await fetchProducts();
+    if (category === 'all') {
+      return products;
+    }
+    return products.filter(p => p.category === category);
+  } catch (error) {
+    console.error("Fetch products by category error:", error);
+    return [];
+  }
+};
+
+// Получить все продукты
 export const fetchProducts = async (): Promise<ProductData[]> => {
   const query = `
     {
       products {
         id
         name
+        brand
         description
         inStock
         category
         prices {
-          currencyLabel
-          currencySymbol
           amount
+          currency {
+            label
+            symbol
+          }
         }
-        gallery {
-          url
-        }
+        gallery
         attributes {
+          id
           name
           type
           items {
@@ -76,147 +102,30 @@ export const fetchProducts = async (): Promise<ProductData[]> => {
   }
 };
 
-// Fetch a single product by ID
-export const fetchProduct = async (id: string): Promise<ProductData | null> => {
-  const query = `
-    query GetProduct($id: String!) {
-      product(id: $id) {
-        id
-        name
-        description
-        inStock
-        category
-        prices {
-          currencyLabel
-          currencySymbol
-          amount
-        }
-        gallery {
-          url
-        }
-        attributes {
-          name
-          type
-          items {
-            id
-            value
-            displayValue
-          }
-        }
-      }
-    }
-  `;
-
-  try {
-    const data = await graphqlRequest(query, { id });
-    return data.product || null;
-  } catch (error) {
-    console.error("Fetch product error:", error);
-    return null;
-  }
-};
-
-// Fetch products by category
-export const fetchProductsByCategory = async (category: string): Promise<ProductData[]> => {
-  const query = `
-    query GetProductsByCategory($category: String!) {
-      productsByCategory(category: $category) {
-        id
-        name
-        description
-        inStock
-        category
-        prices {
-          currencyLabel
-          currencySymbol
-          amount
-        }
-        gallery {
-          url
-        }
-        attributes {
-          name
-          type
-          items {
-            id
-            value
-            displayValue
-          }
-        }
-      }
-    }
-  `;
-
-  try {
-    const data = await graphqlRequest(query, { category });
-    return data.productsByCategory || [];
-  } catch (error) {
-    console.error("Fetch products by category error:", error);
-    return [];
-  }
-};
-
-// Helper function to get available categories (optional)
-export const getAvailableCategories = (): string[] => {
-  return ['all', 'tech', 'clothes'];
-};
-
-// Helper function to format price display
-export const formatPrice = (price: { amount: number; currencySymbol: string }): string => {
-  return `${price.currencySymbol}${price.amount.toFixed(2)}`;
-};
-
-// Helper function to check if product is available
-export const isProductAvailable = (product: ProductData): boolean => {
-  return product.inStock;
-};
-
-// Create an order
+// Создать заказ
 export const createOrder = async (orderData: {
-  total_amount: number;
-  currency: string;
-  items: Array<{
-    product_id: string;
+  products: Array<{
+    id: string;
     quantity: number;
-    price_at_time: number;
-    currency: string;
-    attributes?: Array<{
-      name: string;
-      type: string;
-      selected_value: string;
-      selected_display_value: string;
+    selectedAttributes: Array<{
+      attributeId: string;
+      value: string;
     }>;
   }>;
 }): Promise<any> => {
   const mutation = `
-    mutation CreateOrder($input: CreateOrderInput!) {
-      createOrder(input: $input) {
-        id
-        created_at
-        total_amount
-        currency
-        status
-        items {
-          id
-          product_id
-          product_name
-          quantity
-          price_at_time
-          currency
-          attributes {
-            name
-            type
-            selected_value
-            selected_display_value
-          }
-        }
+    mutation PlaceOrder($input: OrderInput!) {
+      placeOrder(input: $input) {
+        success
+        message
+        orderId
       }
     }
   `;
 
   try {
     const data = await graphqlRequest(mutation, { input: orderData });
-    return data.createOrder;
+    return data.placeOrder;
   } catch (error) {
     console.error("Create order error:", error);
     throw error;

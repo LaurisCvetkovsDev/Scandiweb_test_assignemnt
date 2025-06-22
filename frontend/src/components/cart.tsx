@@ -60,28 +60,22 @@ const Cart = ({ onClose }: CartProps) => {
 
       // Prepare order items
       const orderItems = cart.map((item, index) => ({
-        product_id: item.id,
+        id: item.id,
         quantity: getQuantity(index),
-        price_at_time: item.prices[0]?.amount || 0,
-        currency: "USD",
-        attributes: item.attributes?.map((attr) => {
-          // Since all items are selected in cart, we'll use the first item
-          const selectedItem = attr.items[0];
-          return {
-            name: attr.name,
-            type: attr.type,
-            selected_value: selectedItem.id,
-            selected_display_value:
-              selectedItem.displayValue || selectedItem.value,
-          };
-        }),
+        selectedAttributes:
+          item.attributes?.map((attr) => {
+            // Since all items are selected in cart, we'll use the first item
+            const selectedItem = attr.items[0];
+            return {
+              attributeId: attr.name,
+              value: selectedItem.value,
+            };
+          }) || [],
       }));
 
       // Create order
       const order = await createOrder({
-        total_amount: parseFloat(getTotalPrice()),
-        currency: "USD",
-        items: orderItems,
+        products: orderItems,
       });
 
       // Clear cart after successful order
@@ -251,7 +245,7 @@ const Cart = ({ onClose }: CartProps) => {
                       color: "#333",
                     }}
                   >
-                    {product.prices[0]?.currencySymbol}
+                    {product.prices[0]?.currency.symbol}
                     {product.prices[0]?.amount.toFixed(2)}
                   </span>
                 </div>
@@ -401,7 +395,7 @@ const Cart = ({ onClose }: CartProps) => {
                 }}
               >
                 <img
-                  src={product.gallery[0].url}
+                  src={product.gallery[0]}
                   alt={product.name}
                   style={{
                     width: "100%",

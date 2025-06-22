@@ -1,6 +1,6 @@
 import { useEffect } from "react";
-import { useDataStore } from "../store";
 import { Link } from "react-router-dom";
+import { useDataStore } from "../store";
 
 interface ProductGridProps {
   category?: string;
@@ -10,36 +10,26 @@ interface ProductGridProps {
 const ProductGrid = ({ category }: ProductGridProps) => {
   const products = useDataStore((state) => state.products);
   const setAllProducts = useDataStore((state) => state.setAllProducts);
-  const setProductsByCategory = useDataStore(
-    (state) => state.setProductsByCategory
-  );
   const addToCart = useDataStore((state) => state.addToCart);
 
   useEffect(() => {
-    if (category && category !== "all") {
-      // Use GraphQL category filtering for better performance
-      setProductsByCategory(category);
-    } else {
-      // Fetch all products for "all" category or when no category specified
-      setAllProducts();
-    }
-  }, [category, setAllProducts, setProductsByCategory]);
+    setAllProducts();
+  }, [setAllProducts]);
 
-  // Since we're now fetching filtered data from the server,
-  // we don't need client-side filtering anymore
-  const displayProducts = products;
+  const displayProducts =
+    category && category !== "all"
+      ? products.filter((product) => product.category === category)
+      : products;
 
+  // Функция для безопасного добавления в корзину
   const handleAddToCart = (e: React.MouseEvent, product: any) => {
     e.preventDefault();
     e.stopPropagation();
 
-    // Create a cart item with default attributes if any exist
+    // Создаем объект с пустыми атрибутами для простых товаров
     const cartItem = {
       ...product,
-      attributes: product.attributes.map((attr: any) => ({
-        ...attr,
-        items: attr.items.length > 0 ? [attr.items[0]] : [],
-      })),
+      attributes: product.attributes || [],
     };
 
     addToCart(cartItem);
@@ -48,7 +38,8 @@ const ProductGrid = ({ category }: ProductGridProps) => {
   const getCategoryTitle = () => {
     if (category === "clothes") return "CLOTHES";
     if (category === "tech") return "TECH";
-    return "ALL";
+    if (category === "all") return "ALL";
+    return "CATEGORY";
   };
 
   const toKebabCase = (str: string) => {
@@ -138,7 +129,7 @@ const ProductGrid = ({ category }: ProductGridProps) => {
                         objectFit: "cover",
                         display: "block",
                       }}
-                      src={item.gallery[0]?.url}
+                      src={item.gallery[0]}
                       alt={item.name}
                     />
 
@@ -215,7 +206,7 @@ const ProductGrid = ({ category }: ProductGridProps) => {
                         color: "#333",
                       }}
                     >
-                      {item.prices[0]?.currencySymbol}
+                      {item.prices[0]?.currency.symbol}
                       {item.prices[0]?.amount.toFixed(2)}
                     </p>
                   </div>
@@ -243,7 +234,7 @@ const ProductGrid = ({ category }: ProductGridProps) => {
                         objectFit: "cover",
                         display: "block",
                       }}
-                      src={item.gallery[0]?.url}
+                      src={item.gallery[0]}
                       alt={item.name}
                     />
 
@@ -287,7 +278,7 @@ const ProductGrid = ({ category }: ProductGridProps) => {
                         color: "#8D8F9A",
                       }}
                     >
-                      {item.prices[0]?.currencySymbol}
+                      {item.prices[0]?.currency.symbol}
                       {item.prices[0]?.amount.toFixed(2)}
                     </p>
                   </div>

@@ -5,13 +5,13 @@ export type ProductData = {
     inStock: boolean;
     category: string;
     prices: {
-      currencyLabel: string;
-      currencySymbol: string;
       amount: number;
+      currency: {
+        label: string;
+        symbol: string;
+      };
     }[];
-    gallery: {
-      url: string;
-    }[];
+    gallery: string[];
     attributes: {
       name: string;
       type: string;

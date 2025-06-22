@@ -1,0 +1,27 @@
+<?php
+namespace App\Schema;
+
+use GraphQL\Type\Definition\ObjectType;
+use App\Resolver\OrderResolver;
+
+class MutationType
+{
+  public static function build()
+  {
+    return new ObjectType([
+      'name' => 'Mutation',
+      'fields' => [
+        'placeOrder' => [
+          'type' => OutputTypes::orderResult(),
+          'args' => [
+            'input' => ['type' => InputTypes::orderInput()]
+          ],
+          'resolve' => function ($root, $args) {
+            // Вызываем resolver для создания заказа
+            return OrderResolver::createOrder($args['input']);
+          }
+        ]
+      ]
+    ]);
+  }
+}

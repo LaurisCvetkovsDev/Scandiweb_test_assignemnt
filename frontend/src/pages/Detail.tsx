@@ -156,7 +156,7 @@ const Detail = () => {
               onClick={() => setSelectedImageIndex(index)}
             >
               <img
-                src={item.url}
+                src={item}
                 alt={`Thumbnail ${index}`}
                 style={{
                   width: "100%",
@@ -180,7 +180,7 @@ const Detail = () => {
           }}
         >
           <img
-            src={product.gallery[selectedImageIndex]?.url}
+            src={product.gallery[selectedImageIndex]}
             alt="Selected"
             style={{
               width: "100%",
@@ -364,7 +364,7 @@ const Detail = () => {
             <div style={{ fontSize: "24px", fontWeight: "700", color: "#333" }}>
               {product.prices.map((price, index) => (
                 <span key={index}>
-                  {price.currencySymbol}
+                  {price.currency.symbol}
                   {price.amount.toFixed(2)}
                 </span>
               ))}
