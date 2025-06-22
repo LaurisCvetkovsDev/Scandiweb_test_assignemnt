@@ -104,7 +104,6 @@ const Cart = ({ onClose }: CartProps) => {
 
   return (
     <div
-      data-testid="cart"
       style={{
         width: "100%",
         height: "100vh",

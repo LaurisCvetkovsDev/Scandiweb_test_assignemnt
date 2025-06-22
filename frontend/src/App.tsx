@@ -9,6 +9,8 @@ import "./App.css";
 import Detail from "./pages/Detail";
 
 function App() {
+  console.log("App component loaded successfully");
+
   return (
     <>
       <Router>

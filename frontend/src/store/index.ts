@@ -9,6 +9,7 @@ type DataStore = {
   clearCart: () => void;
 
   products: ProductData[];
+  loading: boolean;
   setAllProducts: () => Promise<void>;
   setProductsByCategory: (category: string) => Promise<void>;
 
@@ -31,9 +32,11 @@ export const useDataStore = create<DataStore>((set, get) => ({
   },
 
   products: [],
+  loading: false,
   setAllProducts: async () => {
+    set({ loading: true });
     const data = await fetchProducts();
-    set({ products: data });
+    set({ products: data, loading: false });
   },
 
   setProductsByCategory: async (category: string) => {
