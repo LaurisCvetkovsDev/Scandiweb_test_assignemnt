@@ -205,6 +205,7 @@ const Cart = ({ onClose }: CartProps) => {
                   {/* Remove Button */}
                   <button
                     onClick={() => handleRemoveFromCart(index)}
+                    data-testid={`cart-btn`}
                     style={{
                       background: "none",
                       border: "none",
