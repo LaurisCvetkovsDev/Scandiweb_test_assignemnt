@@ -21,5 +21,8 @@ export type ProductData = {
         displayValue?: string;
       }[];
     }[];
+    selectedAttributes?: {
+      [key: string]: string;
+    };
   };
   

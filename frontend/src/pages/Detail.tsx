@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useDataStore } from "../store";
 import { ProductData } from "../types/ProductData";
+import Cart from "../components/cart";
 
 const Detail = () => {
   const params = useParams();
@@ -13,6 +14,7 @@ const Detail = () => {
   const [selectedAttributes, setSelectedAttributes] = useState<{
     [key: string]: string;
   }>({});
+  const [cartOpen, setCartOpen] = useState(false);
 
   useEffect(() => {
     if (id) {
@@ -76,6 +78,7 @@ const Detail = () => {
       prices: product.prices,
       gallery: product.gallery,
       attributes: filteredAttributes,
+      selectedAttributes: selectedAttributes,
     };
 
     return toCartItem;
@@ -374,7 +377,10 @@ const Detail = () => {
           {/* Add to Cart Button */}
           <button
             data-testid="add-to-cart"
-            onClick={() => addToCart(setToCartItem())}
+            onClick={() => {
+              addToCart(setToCartItem());
+              setCartOpen(true);
+            }}
             disabled={!product.inStock || !allAttributesSelected}
             style={{
               width: "100%",
@@ -410,6 +416,42 @@ const Detail = () => {
           </div>
         </div>
       </div>
+
+      {/* Cart Overlay */}
+      {cartOpen && (
+        <>
+          {/* Backdrop */}
+          <div
+            style={{
+              position: "fixed",
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              backgroundColor: "rgba(0, 0, 0, 0.5)",
+              zIndex: 1999,
+            }}
+            onClick={() => setCartOpen(false)}
+          />
+
+          {/* Cart Sidebar */}
+          <div
+            style={{
+              position: "fixed",
+              top: 0,
+              right: 0,
+              height: "100vh",
+              width: "400px",
+              backgroundColor: "white",
+              zIndex: 2000,
+              transform: cartOpen ? "translateX(0)" : "translateX(100%)",
+              transition: "transform 0.3s ease",
+            }}
+          >
+            <Cart onClose={() => setCartOpen(false)} />
+          </div>
+        </>
+      )}
     </div>
   );
 };

@@ -10,6 +10,11 @@ const NavBar = () => {
 
   const isActive = (path: string) => location.pathname === path;
 
+  // Подсчет общего количества товаров (для badge)
+  const getTotalItemsCount = () => {
+    return cart.length; // Для простоты показываем количество уникальных товаров
+  };
+
   return (
     <>
       <nav
@@ -135,7 +140,7 @@ const NavBar = () => {
               </svg>
 
               {/* Cart Badge */}
-              {cart.length > 0 && (
+              {getTotalItemsCount() > 0 && (
                 <span
                   style={{
                     position: "absolute",
@@ -154,7 +159,7 @@ const NavBar = () => {
                     border: "2px solid white",
                   }}
                 >
-                  {cart.length > 9 ? "9+" : cart.length}
+                  {getTotalItemsCount() > 9 ? "9+" : getTotalItemsCount()}
                 </span>
               )}
             </button>

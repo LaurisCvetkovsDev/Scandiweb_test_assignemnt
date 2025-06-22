@@ -26,10 +26,31 @@ const ProductGrid = ({ category }: ProductGridProps) => {
     e.preventDefault();
     e.stopPropagation();
 
-    // Создаем объект с пустыми атрибутами для простых товаров
+    // Создаем selectedAttributes с первыми значениями для Quick Shop
+    const selectedAttributes: { [key: string]: string } = {};
+    if (product.attributes) {
+      product.attributes.forEach((attr: any) => {
+        if (attr.items && attr.items.length > 0) {
+          selectedAttributes[attr.name] = attr.items[0].id;
+        }
+      });
+    }
+
+    // Фильтруем атрибуты для отображения только выбранных
+    const filteredAttributes = product.attributes
+      ? product.attributes.map((attr: any) => ({
+          name: attr.name,
+          type: attr.type,
+          items: attr.items.filter(
+            (item: any) => item.id === selectedAttributes[attr.name]
+          ),
+        }))
+      : [];
+
     const cartItem = {
       ...product,
-      attributes: product.attributes || [],
+      attributes: filteredAttributes,
+      selectedAttributes: selectedAttributes,
     };
 
     addToCart(cartItem);
@@ -97,32 +118,18 @@ const ProductGrid = ({ category }: ProductGridProps) => {
                   e.currentTarget.style.transform = "translateY(-4px)";
                   e.currentTarget.style.boxShadow =
                     "0 8px 25px rgba(0,0,0,0.1)";
-                  // Показываем кнопку Quick Shop
-                  const cartButton = e.currentTarget.querySelector(
-                    ".product-cart-button"
-                  ) as HTMLElement;
-                  if (cartButton) {
-                    cartButton.style.opacity = "1";
-                  }
                 }
               }}
               onMouseLeave={(e) => {
                 if (item.inStock) {
                   e.currentTarget.style.transform = "translateY(0)";
                   e.currentTarget.style.boxShadow = "none";
-                  // Скрываем кнопку Quick Shop
-                  const cartButton = e.currentTarget.querySelector(
-                    ".product-cart-button"
-                  ) as HTMLElement;
-                  if (cartButton) {
-                    cartButton.style.opacity = "0";
-                  }
                 }
               }}
             >
               {item.inStock ? (
                 <Link
-                  to={`/product/${item.id}`}
+                  to={`/Detail/${item.id}`}
                   style={{
                     textDecoration: "none",
                     color: "inherit",
@@ -227,7 +234,7 @@ const ProductGrid = ({ category }: ProductGridProps) => {
                 </Link>
               ) : (
                 <Link
-                  to={`/product/${item.id}`}
+                  to={`/Detail/${item.id}`}
                   style={{
                     textDecoration: "none",
                     color: "inherit",
@@ -247,6 +254,7 @@ const ProductGrid = ({ category }: ProductGridProps) => {
                         height: "100%",
                         objectFit: "cover",
                         display: "block",
+                        filter: "grayscale(100%)",
                       }}
                       src={item.gallery[0]}
                       alt={item.name}
