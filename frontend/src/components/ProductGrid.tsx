@@ -115,9 +115,13 @@ const ProductGrid = ({ category }: ProductGridProps) => {
               key={item.id}
               data-testid={`product-${toKebabCase(item.name)}`}
             >
-              <Link to={`/Detail/${item.id}`}>
+              <Link to={`/Detail/${item.id}`} data-testid="product-link">
                 <div>
-                  <img src={item.gallery[0]} alt={item.name} />
+                  <img
+                    src={item.gallery[0]}
+                    alt={item.name}
+                    data-testid="product-image"
+                  />
 
                   {item.inStock && (
                     <div>
@@ -132,15 +136,17 @@ const ProductGrid = ({ category }: ProductGridProps) => {
                 </div>
 
                 <div>
-                  <h3>{item.name}</h3>
-                  <p>
+                  <h3 data-testid="product-name">{item.name}</h3>
+                  <p data-testid="product-price">
                     {item.prices[0]?.currency.symbol}
                     {item.prices[0]?.amount.toFixed(2)}
                   </p>
                 </div>
               </Link>
 
-              {!item.inStock && <div>OUT OF STOCK</div>}
+              {!item.inStock && (
+                <div data-testid="out-of-stock">OUT OF STOCK</div>
+              )}
             </div>
           ))}
         </div>

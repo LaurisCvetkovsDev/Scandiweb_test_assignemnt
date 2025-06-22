@@ -18,13 +18,13 @@ const NavBar = () => {
         <div>
           {/* Left Navigation */}
           <div>
-            <Link to="/" data-testid="category-all">
+            <Link to="/" data-testid="category-link">
               ALL
             </Link>
-            <Link to="/clothes" data-testid="category-clothes">
+            <Link to="/clothes" data-testid="category-link">
               CLOTHES
             </Link>
-            <Link to="/tech" data-testid="category-tech">
+            <Link to="/tech" data-testid="category-link">
               TECH
             </Link>
           </div>
