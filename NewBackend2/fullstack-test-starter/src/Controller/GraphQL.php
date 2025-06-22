@@ -33,14 +33,6 @@ class GraphQL
             }
 
             $input = json_decode($rawInput, true);
-            if ($input === null) {
-                throw new RuntimeException('Invalid JSON input or empty request body');
-            }
-
-            if (!isset($input['query'])) {
-                throw new RuntimeException('GraphQL query is required');
-            }
-
             $query = $input['query'];
             $variableValues = $input['variables'] ?? null;
 

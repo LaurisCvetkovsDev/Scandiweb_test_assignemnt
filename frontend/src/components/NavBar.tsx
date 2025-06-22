@@ -10,11 +10,6 @@ const NavBar = () => {
 
   const isActive = (path: string) => location.pathname === path;
 
-  // Подсчет общего количества товаров (для badge)
-  const getTotalItemsCount = () => {
-    return cart.length; // Для простоты показываем количество уникальных товаров
-  };
-
   return (
     <>
       <nav
@@ -38,28 +33,6 @@ const NavBar = () => {
         >
           {/* Left Navigation */}
           <div style={{ display: "flex", gap: "40px", alignItems: "center" }}>
-            <Link
-              to="/all"
-              data-testid={
-                isActive("/") || isActive("/all")
-                  ? "active-category-link"
-                  : "category-link"
-              }
-              style={{
-                textDecoration: "none",
-                color: isActive("/") || isActive("/all") ? "#4ade80" : "#333",
-                fontWeight: isActive("/") || isActive("/all") ? "600" : "400",
-                fontSize: "16px",
-                borderBottom:
-                  isActive("/") || isActive("/all")
-                    ? "2px solid #4ade80"
-                    : "2px solid transparent",
-                paddingBottom: "8px",
-                transition: "all 0.2s ease",
-              }}
-            >
-              ALL
-            </Link>
             <Link
               to="/clothes"
               data-testid={
@@ -97,6 +70,25 @@ const NavBar = () => {
               }}
             >
               TECH
+            </Link>
+            <Link
+              to="/"
+              data-testid={
+                isActive("/") ? "active-category-link" : "category-link"
+              }
+              style={{
+                textDecoration: "none",
+                color: isActive("/") ? "#4ade80" : "#333",
+                fontWeight: isActive("/") ? "600" : "400",
+                fontSize: "16px",
+                borderBottom: isActive("/")
+                  ? "2px solid #4ade80"
+                  : "2px solid transparent",
+                paddingBottom: "8px",
+                transition: "all 0.2s ease",
+              }}
+            >
+              ALL
             </Link>
           </div>
 
@@ -143,7 +135,7 @@ const NavBar = () => {
               </svg>
 
               {/* Cart Badge */}
-              {getTotalItemsCount() > 0 && (
+              {cart.length > 0 && (
                 <span
                   style={{
                     position: "absolute",
@@ -162,7 +154,7 @@ const NavBar = () => {
                     border: "2px solid white",
                   }}
                 >
-                  {getTotalItemsCount() > 9 ? "9+" : getTotalItemsCount()}
+                  {cart.length > 9 ? "9+" : cart.length}
                 </span>
               )}
             </button>
@@ -189,7 +181,6 @@ const NavBar = () => {
 
           {/* Cart Sidebar */}
           <div
-            data-testid="cart-overlay"
             style={{
               position: "fixed",
               top: 0,

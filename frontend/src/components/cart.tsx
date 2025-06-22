@@ -52,12 +52,6 @@ const Cart = ({ onClose }: CartProps) => {
       .toFixed(2);
   };
 
-  const getTotalItemsCount = () => {
-    return cart.reduce((total, _, index) => {
-      return total + getQuantity(index);
-    }, 0);
-  };
-
   const handlePlaceOrder = async () => {
     if (cart.length === 0) return;
 
@@ -99,10 +93,7 @@ const Cart = ({ onClose }: CartProps) => {
   };
 
   const toKebabCase = (str: string) => {
-    return str
-      .toLowerCase()
-      .replace(/\s+/g, "-")
-      .replace(/[^\w\-#]/g, ""); // Сохраняем # для цветов
+    return str.toLowerCase().replace(/\s+/g, "-");
   };
 
   return (
@@ -135,8 +126,7 @@ const Cart = ({ onClose }: CartProps) => {
         >
           My Bag
           <span style={{ fontWeight: "500", marginLeft: "8px" }}>
-            {getTotalItemsCount()}{" "}
-            {getTotalItemsCount() === 1 ? "item" : "items"}
+            {cart.length} {cart.length === 1 ? "item" : "items"}
           </span>
         </h2>
         <button
@@ -285,27 +275,26 @@ const Cart = ({ onClose }: CartProps) => {
                     >
                       {attr.items.map((item) => {
                         const isColor = attr.name.toLowerCase() === "color";
-                        // В корзине показываем только выбранный атрибут
-                        const isSelected =
-                          product.selectedAttributes &&
-                          product.selectedAttributes[attr.name] === item.id;
-
-                        // Показываем только выбранные атрибуты
-                        if (!isSelected) return null;
-
+                        const isSelected = true; // In cart, all items are "selected"
                         return (
                           <div
                             key={item.id}
-                            data-testid={`cart-item-attribute-${toKebabCase(
-                              attr.name
-                            )}-${toKebabCase(item.value)}-selected`}
+                            data-testid={
+                              isSelected
+                                ? `cart-item-attribute-${toKebabCase(
+                                    attr.name
+                                  )}-${toKebabCase(item.value)}-selected`
+                                : `cart-item-attribute-${toKebabCase(
+                                    attr.name
+                                  )}-${toKebabCase(item.value)}`
+                            }
                             style={{
                               ...(isColor
                                 ? {
                                     width: "32px",
                                     height: "32px",
                                     backgroundColor: item.value,
-                                    border: "2px solid #333",
+                                    border: "1px solid #ccc",
                                     borderRadius: "3px",
                                   }
                                 : {
@@ -315,7 +304,6 @@ const Cart = ({ onClose }: CartProps) => {
                                     fontWeight: "400",
                                     backgroundColor: "#333",
                                     color: "white",
-                                    borderRadius: "3px",
                                   }),
                             }}
                           >

@@ -26,31 +26,10 @@ const ProductGrid = ({ category }: ProductGridProps) => {
     e.preventDefault();
     e.stopPropagation();
 
-    // Создаем selectedAttributes с первыми значениями для Quick Shop
-    const selectedAttributes: { [key: string]: string } = {};
-    if (product.attributes) {
-      product.attributes.forEach((attr: any) => {
-        if (attr.items && attr.items.length > 0) {
-          selectedAttributes[attr.name] = attr.items[0].id;
-        }
-      });
-    }
-
-    // Фильтруем атрибуты для отображения только выбранных
-    const filteredAttributes = product.attributes
-      ? product.attributes.map((attr: any) => ({
-          name: attr.name,
-          type: attr.type,
-          items: attr.items.filter(
-            (item: any) => item.id === selectedAttributes[attr.name]
-          ),
-        }))
-      : [];
-
+    // Создаем объект с пустыми атрибутами для простых товаров
     const cartItem = {
       ...product,
-      attributes: filteredAttributes,
-      selectedAttributes: selectedAttributes,
+      attributes: product.attributes || [],
     };
 
     addToCart(cartItem);
@@ -64,10 +43,7 @@ const ProductGrid = ({ category }: ProductGridProps) => {
   };
 
   const toKebabCase = (str: string) => {
-    return str
-      .toLowerCase()
-      .replace(/\s+/g, "-")
-      .replace(/[^\w\-#]/g, ""); // Сохраняем # для цветов
+    return str.toLowerCase().replace(/\s+/g, "-");
   };
 
   return (
@@ -236,12 +212,12 @@ const ProductGrid = ({ category }: ProductGridProps) => {
                   </div>
                 </Link>
               ) : (
-                <Link
-                  to={`/Detail/${item.id}`}
+                <div
                   style={{
                     textDecoration: "none",
                     color: "inherit",
                     display: "block",
+                    cursor: "not-allowed",
                   }}
                 >
                   <div
@@ -257,7 +233,6 @@ const ProductGrid = ({ category }: ProductGridProps) => {
                         height: "100%",
                         objectFit: "cover",
                         display: "block",
-                        filter: "grayscale(100%)",
                       }}
                       src={item.gallery[0]}
                       alt={item.name}
@@ -307,7 +282,7 @@ const ProductGrid = ({ category }: ProductGridProps) => {
                       {item.prices[0]?.amount.toFixed(2)}
                     </p>
                   </div>
-                </Link>
+                </div>
               )}
             </div>
           ))}
