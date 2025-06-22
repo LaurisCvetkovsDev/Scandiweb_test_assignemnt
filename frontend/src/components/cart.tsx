@@ -97,7 +97,6 @@ const Cart = ({ onClose }: CartProps) => {
         flexDirection: "column",
       }}
     >
-      {/* Header */}
       <div
         style={{
           padding: "20px",
@@ -141,7 +140,6 @@ const Cart = ({ onClose }: CartProps) => {
         </button>
       </div>
 
-      {/* Cart Items */}
       <div
         style={{
           flex: 1,
@@ -171,7 +169,6 @@ const Cart = ({ onClose }: CartProps) => {
                 gap: "12px",
               }}
             >
-              {/* Product Info */}
               <div style={{ flex: 1 }}>
                 <div
                   style={{
@@ -193,7 +190,6 @@ const Cart = ({ onClose }: CartProps) => {
                     {product.name}
                   </h3>
 
-                  {/* Remove Button */}
                   <button
                     onClick={() => handleRemoveFromCart(index)}
                     data-testid={`cart-btn`}
@@ -242,7 +238,6 @@ const Cart = ({ onClose }: CartProps) => {
                   </span>
                 </div>
 
-                {/* Attributes */}
                 {product.attributes.map((attr) => (
                   <div
                     key={attr.name}
@@ -306,7 +301,6 @@ const Cart = ({ onClose }: CartProps) => {
                   </div>
                 ))}
 
-                {/* Quantity Controls */}
                 <div
                   style={{ display: "flex", alignItems: "center", gap: "16px" }}
                 >
@@ -378,7 +372,6 @@ const Cart = ({ onClose }: CartProps) => {
                 </div>
               </div>
 
-              {/* Product Image */}
               <div
                 style={{
                   width: "120px",
@@ -402,7 +395,6 @@ const Cart = ({ onClose }: CartProps) => {
         )}
       </div>
 
-      {/* Footer */}
       <div
         style={{
           borderTop: "1px solid #f0f0f0",
