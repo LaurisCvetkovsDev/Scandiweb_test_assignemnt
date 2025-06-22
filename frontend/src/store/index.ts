@@ -14,13 +14,17 @@ type DataStore = {
 
   product: ProductData | null;
   setProduct: (id: string) => Promise<void>;
+
+  // Cart overlay state
+  isCartOpen: boolean;
+  setCartOpen: (open: boolean) => void;
 };
 
 export const useDataStore = create<DataStore>((set, get) => ({
   cart: [],
   addToCart: (product) => {
     const { cart } = get();
-    set({ cart: [...cart, product] });
+    set({ cart: [...cart, product], isCartOpen: true });
   },
   removeFromCart: (index: number) => {
     const { cart } = get();
@@ -46,5 +50,11 @@ export const useDataStore = create<DataStore>((set, get) => ({
     const data = await fetchProduct(id); 
     set({ product: data });
     
+  },
+
+  // Cart overlay state
+  isCartOpen: false,
+  setCartOpen: (open: boolean) => {
+    set({ isCartOpen: open });
   },
 }));

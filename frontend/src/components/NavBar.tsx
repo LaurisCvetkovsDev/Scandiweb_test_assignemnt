@@ -1,12 +1,12 @@
 import { Link, useLocation } from "react-router-dom";
 import Cart from "./cart.tsx";
-import { useState } from "react";
 import { useDataStore } from "../store";
 
 const NavBar = () => {
   const location = useLocation();
-  const [cartOpen, setCartOpen] = useState(false);
   const cart = useDataStore((state) => state.cart);
+  const isCartOpen = useDataStore((state) => state.isCartOpen);
+  const setCartOpen = useDataStore((state) => state.setCartOpen);
 
   const isActive = (path: string) => location.pathname === path;
 
@@ -163,7 +163,7 @@ const NavBar = () => {
       </nav>
 
       {/* Cart Overlay */}
-      {cartOpen && (
+      {isCartOpen && (
         <>
           {/* Backdrop */}
           <div
@@ -181,6 +181,7 @@ const NavBar = () => {
 
           {/* Cart Sidebar */}
           <div
+            data-testid="cart-overlay"
             style={{
               position: "fixed",
               top: 0,
@@ -189,7 +190,7 @@ const NavBar = () => {
               width: "400px",
               backgroundColor: "white",
               zIndex: 2000,
-              transform: cartOpen ? "translateX(0)" : "translateX(100%)",
+              transform: isCartOpen ? "translateX(0)" : "translateX(100%)",
               transition: "transform 0.3s ease",
             }}
           >
