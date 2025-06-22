@@ -10,12 +10,11 @@ const Detail = () => {
   const product = useDataStore((state) => state.product);
   const setProduct = useDataStore((state) => state.setProduct);
   const addToCart = useDataStore((state) => state.addToCart);
-  const cartOpen = useDataStore((state) => state.cartOpen);
-  const setCartOpen = useDataStore((state) => state.setCartOpen);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [selectedAttributes, setSelectedAttributes] = useState<{
     [key: string]: string;
   }>({});
+  const [cartOpen, setCartOpen] = useState(false);
 
   useEffect(() => {
     if (id) {
@@ -25,14 +24,8 @@ const Detail = () => {
 
   useEffect(() => {
     if (product && product.attributes) {
-      // Set default selected attributes (first item for each attribute)
-      const defaultAttributes: { [key: string]: string } = {};
-      product.attributes.forEach((attr) => {
-        if (attr.items.length > 0) {
-          defaultAttributes[attr.name] = attr.items[0].id;
-        }
-      });
-      setSelectedAttributes(defaultAttributes);
+      // Не устанавливаем атрибуты по умолчанию - пользователь должен выбрать их сам
+      setSelectedAttributes({});
     }
   }, [product]);
 
@@ -98,7 +91,10 @@ const Detail = () => {
   };
 
   const toKebabCase = (str: string) => {
-    return str.toLowerCase().replace(/\s+/g, "-");
+    return str
+      .toLowerCase()
+      .replace(/\s+/g, "-")
+      .replace(/[^\w\-#]/g, ""); // Сохраняем # для цветов
   };
 
   // Safe HTML parsing (forbidden to use dangerouslySetInnerHTML)
@@ -112,6 +108,11 @@ const Detail = () => {
       .replace(/&gt;/g, ">")
       .replace(/&quot;/g, '"');
   };
+
+  // Check if all required attributes are selected
+  const allAttributesSelected = product.attributes.every(
+    (attr) => selectedAttributes[attr.name]
+  );
 
   return (
     <div
@@ -265,7 +266,6 @@ const Detail = () => {
           }}
         >
           <h1
-            data-testid="product-name"
             style={{
               fontSize: "30px",
               fontWeight: "600",
@@ -310,6 +310,11 @@ const Detail = () => {
                   return (
                     <button
                       key={item.id}
+                      data-testid={`product-attribute-${toKebabCase(
+                        attribute.name
+                      )}-${toKebabCase(
+                        item.value || item.displayValue || item.id
+                      )}`}
                       onClick={() => handleSelect(attribute.name, item.id)}
                       style={{
                         ...(isColor
@@ -361,10 +366,7 @@ const Detail = () => {
             >
               Price:
             </h3>
-            <div
-              data-testid="product-price"
-              style={{ fontSize: "24px", fontWeight: "700", color: "#333" }}
-            >
+            <div style={{ fontSize: "24px", fontWeight: "700", color: "#333" }}>
               {product.prices.map((price, index) => (
                 <span key={index}>
                   {price.currency.symbol}
@@ -381,10 +383,11 @@ const Detail = () => {
               addToCart(setToCartItem());
               setCartOpen(true);
             }}
-            disabled={!product.inStock}
+            disabled={!product.inStock || !allAttributesSelected}
             style={{
               width: "100%",
-              backgroundColor: product.inStock ? "#4ade80" : "#ccc",
+              backgroundColor:
+                product.inStock && allAttributesSelected ? "#4ade80" : "#ccc",
               color: "white",
               padding: "16px",
               fontSize: "16px",
@@ -393,7 +396,10 @@ const Detail = () => {
               borderRadius: "4px",
               marginBottom: "24px",
               border: "none",
-              cursor: product.inStock ? "pointer" : "not-allowed",
+              cursor:
+                product.inStock && allAttributesSelected
+                  ? "pointer"
+                  : "not-allowed",
             }}
           >
             {!product.inStock ? "Out of Stock" : "Add to Cart"}

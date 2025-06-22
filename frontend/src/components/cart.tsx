@@ -99,7 +99,10 @@ const Cart = ({ onClose }: CartProps) => {
   };
 
   const toKebabCase = (str: string) => {
-    return str.toLowerCase().replace(/\s+/g, "-");
+    return str
+      .toLowerCase()
+      .replace(/\s+/g, "-")
+      .replace(/[^\w\-#]/g, ""); // Сохраняем # для цветов
   };
 
   return (
@@ -212,6 +215,7 @@ const Cart = ({ onClose }: CartProps) => {
                   {/* Remove Button */}
                   <button
                     onClick={() => handleRemoveFromCart(index)}
+                    data-testid={`cart-btn`}
                     style={{
                       background: "none",
                       border: "none",
