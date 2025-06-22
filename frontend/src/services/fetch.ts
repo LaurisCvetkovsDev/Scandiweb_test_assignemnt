@@ -1,7 +1,7 @@
 import { ProductData } from "../types/ProductData";
 
-//const GRAPHQL_ENDPOINT = "http://localhost/scandiFinal/NewBackend2/fullstack-test-starter/public/";
-const GRAPHQL_ENDPOINT = "https://laucve1.dreamhosters.com/scandiFinal/NewBackend2/fullstack-test-starter/public/";
+const GRAPHQL_ENDPOINT = "http://localhost/scandiFinal/NewBackend2/fullstack-test-starter/public/";
+//const GRAPHQL_ENDPOINT = "https://laucve1.dreamhosters.com/scandiFinal/NewBackend2/fullstack-test-starter/public/";
 
 const graphqlRequest = async (query: string, variables?: any): Promise<any> => {
   try {

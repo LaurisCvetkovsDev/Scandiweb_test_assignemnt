@@ -189,6 +189,7 @@ const NavBar = () => {
 
           {/* Cart Sidebar */}
           <div
+            data-testid="cart-overlay"
             style={{
               position: "fixed",
               top: 0,
