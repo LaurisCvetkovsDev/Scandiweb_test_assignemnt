@@ -172,6 +172,7 @@ const NavBar = () => {
         <>
           {/* Backdrop */}
           <div
+            data-testid="cart-overlay"
             style={{
               position: "fixed",
               top: 0,
@@ -186,6 +187,7 @@ const NavBar = () => {
 
           {/* Cart Sidebar */}
           <div
+            data-testid="cart-sidebar"
             style={{
               position: "fixed",
               top: 0,

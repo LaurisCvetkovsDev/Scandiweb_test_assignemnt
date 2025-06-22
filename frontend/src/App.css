@@ -44,12 +44,12 @@ img {
   display: block;
 }
 
-/* Product Grid Cart Button Hover Effect */
-.product-cart-button {
+/* Product Grid Quick Shop Button Hover Effect */
+.quick-shop-button {
   opacity: 0 !important;
   transition: opacity 0.2s ease !important;
 }
 
-.product-card:hover .product-cart-button {
+.product-card:hover .quick-shop-button {
   opacity: 1 !important;
 } 

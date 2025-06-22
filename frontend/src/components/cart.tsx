@@ -104,6 +104,7 @@ const Cart = ({ onClose }: CartProps) => {
 
   return (
     <div
+      data-testid="cart"
       style={{
         width: "100%",
         height: "100vh",
@@ -212,7 +213,6 @@ const Cart = ({ onClose }: CartProps) => {
                   {/* Remove Button */}
                   <button
                     onClick={() => handleRemoveFromCart(index)}
-                    data-testid={`cart-btn`}
                     style={{
                       background: "none",
                       border: "none",

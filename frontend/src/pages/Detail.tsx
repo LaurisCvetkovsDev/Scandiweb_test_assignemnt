@@ -313,6 +313,9 @@ const Detail = () => {
                   return (
                     <button
                       key={item.id}
+                      data-testid={`product-attribute-${toKebabCase(
+                        attribute.name
+                      )}-${toKebabCase(item.value)}`}
                       onClick={() => handleSelect(attribute.name, item.id)}
                       style={{
                         ...(isColor

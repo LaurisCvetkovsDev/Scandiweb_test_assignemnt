@@ -162,9 +162,10 @@ const ProductGrid = ({ category }: ProductGridProps) => {
                         opacity: 0,
                         transition: "opacity 0.2s ease",
                       }}
-                      className="product-cart-button"
+                      className="quick-shop-button"
                     >
                       <button
+                        data-testid="add-to-cart"
                         onClick={(e) => handleAddToCart(e, item)}
                         style={{
                           backgroundColor: "#4ade80",
