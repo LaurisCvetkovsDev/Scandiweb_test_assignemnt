@@ -40,9 +40,7 @@ const NavBar = () => {
           <div style={{ display: "flex", gap: "40px", alignItems: "center" }}>
             <Link
               to="/"
-              data-testid={
-                isActive("/") ? "active-category-link" : "category-link"
-              }
+              data-testid="category-link"
               style={{
                 textDecoration: "none",
                 color: isActive("/") ? "#4ade80" : "#333",
@@ -59,9 +57,7 @@ const NavBar = () => {
             </Link>
             <Link
               to="/clothes"
-              data-testid={
-                isActive("/clothes") ? "active-category-link" : "category-link"
-              }
+              data-testid="category-link"
               style={{
                 textDecoration: "none",
                 color: isActive("/clothes") ? "#4ade80" : "#333",
@@ -78,9 +74,7 @@ const NavBar = () => {
             </Link>
             <Link
               to="/tech"
-              data-testid={
-                isActive("/tech") ? "active-category-link" : "category-link"
-              }
+              data-testid="category-link"
               style={{
                 textDecoration: "none",
                 color: isActive("/tech") ? "#4ade80" : "#333",

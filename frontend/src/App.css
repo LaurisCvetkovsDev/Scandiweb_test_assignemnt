@@ -46,7 +46,7 @@ img {
 
 /* Product Grid Cart Button Hover Effect */
 .product-cart-button {
-  opacity: 0 !important;
+  opacity: 1 !important;
   transition: opacity 0.2s ease !important;
 }
 

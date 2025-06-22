@@ -60,6 +60,10 @@ const ProductGrid = ({ category }: ProductGridProps) => {
     };
 
     addToCart(cartItem);
+
+    // Открываем корзину после добавления
+    // Это можно сделать через глобальное состояние или событие
+    console.log("Item added to cart, should open cart overlay");
   };
 
   const getCategoryTitle = () => {
@@ -170,7 +174,7 @@ const ProductGrid = ({ category }: ProductGridProps) => {
                           position: "absolute",
                           bottom: "16px",
                           right: "16px",
-                          opacity: 0,
+                          opacity: 1,
                           transition: "opacity 0.2s ease",
                         }}
                         className="product-cart-button"
