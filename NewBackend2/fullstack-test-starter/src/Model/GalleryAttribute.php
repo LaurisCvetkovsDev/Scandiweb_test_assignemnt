@@ -3,12 +3,12 @@ namespace App\Model;
 
 class GalleryAttribute extends Attribute
 {
-    protected $items; // массив картинок
+    protected $items;
     public function __construct($data)
     {
-        $this->id = $data['id'];              // ← отсутствует!
-        $this->name = $data['name'];          // ← отсутствует!
-        $this->type = $data['type'];          // ← отсутствует!
+        $this->id = $data['id'];
+        $this->name = $data['name'];
+        $this->type = $data['type'];
         $this->items = $data['items'];
 
 

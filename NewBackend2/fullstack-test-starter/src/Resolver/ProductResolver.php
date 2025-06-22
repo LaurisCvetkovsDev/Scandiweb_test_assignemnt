@@ -12,7 +12,6 @@ class ProductResolver
     {
         $db = Database::getInstance();
 
-        // Получаем основную информацию о продуктах
         $sql = "SELECT * FROM products";
         if (isset($args['category'])) {
             $sql .= " WHERE category = ?";
@@ -27,17 +26,15 @@ class ProductResolver
 
         $products = [];
         foreach ($productsData as $productData) {
-            // Получаем связанные данные для каждого продукта
             $productData['prices'] = self::getProductPrices($db, $productData['id']);
             $productData['gallery'] = self::getProductGallery($db, $productData['id']);
             $productData['attributes'] = self::getProductAttributes($db, $productData['id']);
 
-            // Приводим поля к правильному формату для GraphQL
             $productData['inStock'] = (bool) $productData['in_stock']; // Переименовываем поле
             $productData['brand'] = $productData['brand'] ?? '';
             $productData['description'] = $productData['description'] ?? '';
 
-            $products[] = $productData; // Возвращаем массив вместо объекта
+            $products[] = $productData;
         }
 
         return $products;
@@ -50,7 +47,6 @@ class ProductResolver
         $stmt->execute([$productId]);
         $prices = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-        // Преобразуем в формат как в JSON
         $result = [];
         foreach ($prices as $price) {
             $result[] = [
@@ -75,7 +71,6 @@ class ProductResolver
 
     private static function getProductAttributes($db, $productId)
     {
-        // Получаем атрибуты
         $sql = "SELECT DISTINCT attr_id, name, type FROM product_attributes WHERE product_id = ?";
         $stmt = $db->prepare($sql);
         $stmt->execute([$productId]);
@@ -83,7 +78,7 @@ class ProductResolver
 
         $result = [];
         foreach ($attributes as $attr) {
-            // Получаем items для каждого атрибута
+
             $itemsSql = "SELECT item_id, value, display_value FROM attribute_items WHERE product_id = ? AND attr_id = ?";
             $itemsStmt = $db->prepare($itemsSql);
             $itemsStmt->execute([$productId, $attr['attr_id']]);

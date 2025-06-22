@@ -7,7 +7,6 @@ abstract class Attribute
     protected $name;
     protected $type;
 
-    // Общие методы
     public function getId()
     {
         return $this->id;
@@ -17,7 +16,6 @@ abstract class Attribute
         return $this->name;
     }
 
-    // Каждый тип атрибута отображается по-разному
     abstract public function getValue();
     abstract public function getDisplayValue();
 

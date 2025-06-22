@@ -23,16 +23,12 @@ const Cart = ({ onClose }: CartProps) => {
   };
 
   const handleRemoveFromCart = (index: number) => {
-    // Remove the item from cart
     removeFromCart(index);
-
-    // Update quantities state to remove the deleted index and shift down all indices above it
     setQuantities((prev) => {
       const newQuantities: { [key: number]: number } = {};
       Object.keys(prev).forEach((key) => {
         const keyIndex = parseInt(key);
         if (keyIndex < index) {
-          // Keep indices below the removed index
           newQuantities[keyIndex] = prev[keyIndex];
         } else if (keyIndex > index) {
           newQuantities[keyIndex - 1] = prev[keyIndex];
@@ -58,13 +54,11 @@ const Cart = ({ onClose }: CartProps) => {
     try {
       setIsPlacingOrder(true);
 
-      // Prepare order items
       const orderItems = cart.map((item, index) => ({
         id: item.id,
         quantity: getQuantity(index),
         selectedAttributes:
           item.attributes?.map((attr) => {
-            // Since all items are selected in cart, we'll use the first item
             const selectedItem = attr.items[0];
             return {
               attributeId: attr.name,
@@ -73,16 +67,13 @@ const Cart = ({ onClose }: CartProps) => {
           }) || [],
       }));
 
-      // Create order
       const order = await createOrder({
         products: orderItems,
       });
 
-      // Clear cart after successful order
       removeFromCart(0);
       setQuantities({});
 
-      // Show success message
       alert("Order placed successfully! Order ID: " + order.id);
     } catch (error) {
       console.error("Error placing order:", error);
@@ -275,7 +266,7 @@ const Cart = ({ onClose }: CartProps) => {
                     >
                       {attr.items.map((item) => {
                         const isColor = attr.name.toLowerCase() === "color";
-                        const isSelected = true; // In cart, all items are "selected"
+                        const isSelected = true;
                         return (
                           <div
                             key={item.id}

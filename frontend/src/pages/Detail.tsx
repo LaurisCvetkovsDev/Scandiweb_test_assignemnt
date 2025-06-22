@@ -22,8 +22,6 @@ const Detail = () => {
 
   useEffect(() => {
     if (product && product.attributes) {
-      // Reset selected attributes when product changes
-      // User must manually select all attributes
       setSelectedAttributes({});
     }
   }, [product]);
@@ -92,11 +90,9 @@ const Detail = () => {
     return str.toLowerCase().replace(/\s+/g, "-");
   };
 
-  // Safe HTML parsing (forbidden to use dangerouslySetInnerHTML)
   const parseHtmlDescription = (html: string) => {
-    // Simple HTML parsing without dangerouslySetInnerHTML
     return html
-      .replace(/<[^>]*>/g, "") // Remove HTML tags
+      .replace(/<[^>]*>/g, "")
       .replace(/&nbsp;/g, " ")
       .replace(/&amp;/g, "&")
       .replace(/&lt;/g, "<")
@@ -104,7 +100,6 @@ const Detail = () => {
       .replace(/&quot;/g, '"');
   };
 
-  // Check if all required attributes are selected
   const allAttributesSelected = product.attributes.every(
     (attr) => selectedAttributes[attr.name]
   );
@@ -127,7 +122,6 @@ const Detail = () => {
           alignItems: "start",
         }}
       >
-        {/* Thumbnail Gallery */}
         <div
           style={{
             display: "flex",
@@ -164,7 +158,6 @@ const Detail = () => {
           ))}
         </div>
 
-        {/* Main Image */}
         <div
           data-testid="product-gallery"
           style={{
@@ -185,7 +178,6 @@ const Detail = () => {
             }}
           />
 
-          {/* Navigation Arrows */}
           {product.gallery.length > 1 && (
             <>
               <button
@@ -251,7 +243,6 @@ const Detail = () => {
           )}
         </div>
 
-        {/* Product Info */}
         <div
           style={{
             backgroundColor: "white",
@@ -271,7 +262,6 @@ const Detail = () => {
             {product.name}
           </h1>
 
-          {/* Attributes */}
           {product.attributes.map((attribute) => (
             <div
               key={attribute.name}
@@ -346,7 +336,6 @@ const Detail = () => {
             </div>
           ))}
 
-          {/* Price */}
           <div style={{ marginBottom: "30px" }}>
             <h3
               style={{
@@ -369,7 +358,6 @@ const Detail = () => {
             </div>
           </div>
 
-          {/* Add to Cart Button */}
           <button
             data-testid="add-to-cart"
             onClick={() => addToCart(setToCartItem())}
@@ -395,7 +383,6 @@ const Detail = () => {
             {!product.inStock ? "Out of Stock" : "Add to Cart"}
           </button>
 
-          {/* Product Description */}
           <div
             data-testid="product-description"
             style={{

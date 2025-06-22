@@ -9,18 +9,14 @@ class OrderResolver
     {
         $db->beginTransaction();
         try {
-            // 1. Создаём заказ
             $orderId = uniqid('order_');
             $totalAmount = 0; // будет рассчитан ниже
 
-            // Сначала создаем заказ с нулевой суммой
             $orderSql = "INSERT INTO orders (id, total_amount, currency, status, created_at) 
                          VALUES (?, ?, 'USD', 'pending', NOW())";
             $db->prepare($orderSql)->execute([$orderId, 0]);
 
-            // 2. Добавляем товары и рассчитываем общую сумму
             foreach ($input['products'] as $product) {
-                // Получаем актуальную цену продукта из базы
                 $priceSql = "SELECT amount FROM product_prices WHERE product_id = ? AND currency_label = 'USD' LIMIT 1";
                 $priceStmt = $db->prepare($priceSql);
                 $priceStmt->execute([$product['id']]);
@@ -35,7 +31,6 @@ class OrderResolver
                             VALUES (?, ?, ?, ?, ?, 'USD')";
                 $db->prepare($itemSql)->execute([$itemId, $orderId, $product['id'], $product['quantity'], $priceAtTime]);
 
-                // 3. Сохраняем выбранные атрибуты
                 foreach ($product['selectedAttributes'] as $attr) {
                     $attrSql = "INSERT INTO order_item_attributes (id, order_item_id, attribute_name, selected_value, selected_display_value) 
                                 VALUES (?, ?, ?, ?, ?)";
@@ -43,7 +38,6 @@ class OrderResolver
                 }
             }
 
-            // 4. Обновляем общую сумму заказа
             $updateOrderSql = "UPDATE orders SET total_amount = ? WHERE id = ?";
             $db->prepare($updateOrderSql)->execute([$totalAmount, $orderId]);
 

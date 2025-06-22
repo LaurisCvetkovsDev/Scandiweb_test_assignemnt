@@ -31,7 +31,6 @@ const NavBar = () => {
             margin: "0 auto",
           }}
         >
-          {/* Left Navigation */}
           <div style={{ display: "flex", gap: "40px", alignItems: "center" }}>
             <Link
               to="/clothes"
@@ -92,7 +91,6 @@ const NavBar = () => {
             </Link>
           </div>
 
-          {/* Right Cart */}
           <div>
             <button
               data-testid="cart-btn"
@@ -116,7 +114,6 @@ const NavBar = () => {
                 e.currentTarget.style.backgroundColor = "transparent";
               }}
             >
-              {/* Cart Icon SVG */}
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="24"
@@ -134,7 +131,6 @@ const NavBar = () => {
                 <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
               </svg>
 
-              {/* Cart Badge */}
               {cart.length > 0 && (
                 <span
                   style={{
@@ -162,10 +158,8 @@ const NavBar = () => {
         </div>
       </nav>
 
-      {/* Cart Overlay */}
       {isCartOpen && (
         <>
-          {/* Backdrop */}
           <div
             style={{
               position: "fixed",
@@ -179,7 +173,6 @@ const NavBar = () => {
             onClick={() => setCartOpen(false)}
           />
 
-          {/* Cart Sidebar */}
           <div
             data-testid="cart-overlay"
             style={{

@@ -15,7 +15,6 @@ type DataStore = {
   product: ProductData | null;
   setProduct: (id: string) => Promise<void>;
 
-  // Cart overlay state
   isCartOpen: boolean;
   setCartOpen: (open: boolean) => void;
 };
@@ -52,7 +51,6 @@ export const useDataStore = create<DataStore>((set, get) => ({
     
   },
 
-  // Cart overlay state
   isCartOpen: false,
   setCartOpen: (open: boolean) => {
     set({ isCartOpen: open });

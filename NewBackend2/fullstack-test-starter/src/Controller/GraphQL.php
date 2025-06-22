@@ -8,7 +8,7 @@ use GraphQL\Type\SchemaConfig;
 use RuntimeException;
 use Throwable;
 
-// Импортируем ТВОИ классы схем
+
 use App\Schema\QueryType;
 use App\Schema\MutationType;
 
@@ -17,7 +17,7 @@ class GraphQL
     static public function handle()
     {
         try {
-            // Используем ТВОИ готовые схемы
+
             $queryType = QueryType::build();
             $mutationType = MutationType::build();
 
@@ -36,7 +36,7 @@ class GraphQL
             $query = $input['query'];
             $variableValues = $input['variables'] ?? null;
 
-            // Убираем демо rootValue
+
             $result = GraphQLBase::executeQuery($schema, $query, null, null, $variableValues);
             $output = $result->toArray();
         } catch (Throwable $e) {

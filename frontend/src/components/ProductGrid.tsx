@@ -21,12 +21,9 @@ const ProductGrid = ({ category }: ProductGridProps) => {
       ? products.filter((product) => product.category === category)
       : products;
 
-  // Функция для безопасного добавления в корзину
   const handleAddToCart = (e: React.MouseEvent, product: any) => {
     e.preventDefault();
     e.stopPropagation();
-
-    // Создаем объект с пустыми атрибутами для простых товаров
     const cartItem = {
       ...product,
       attributes: product.attributes || [],

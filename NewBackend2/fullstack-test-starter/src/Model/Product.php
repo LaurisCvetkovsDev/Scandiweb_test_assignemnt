@@ -3,30 +3,30 @@ namespace App\Model;
 use Exception;
 abstract class Product
 {
-    // Основные идентификаторы - есть у всех
-    protected $id;           // уникальный ID в базе
+    protected $id;
+    protected $name;
+    protected $brand;
+    protected $description;
+    protected $category;
+    protected $prices;
+    protected $gallery;
+    protected $attributes;
+    protected $inStock;
+    protected $type;
 
-    // Основная информация - есть у всех
-    protected $name;         // название товара
-    protected $brand;        // бренд товара
-    protected $description;  // описание товара
-
-    // Категория - есть у всех
-    protected $category;     // к какой категории относится
-
-    // Базовые цены - есть у всех (но считаются по-разному!)
-    protected $prices;       // массив цен в разных валютах
-
-    // Изображения - есть у всех
-    protected $gallery;      // массив изображений
-
-    // Атрибуты - есть у всех (но разные!)
-    protected $attributes;   // массив атрибутов
-
-    // Статус товара - есть у всех
-    protected $inStock;      // в наличии или нет
-
-    // Тип товара - нужен для полиморфизма
+    public function __construct($data)
+    {
+        $this->id = $data['id'];
+        $this->name = $data['name'];
+        $this->brand = $data['brand'] ?? '';
+        $this->description = $data['description'] ?? '';
+        $this->category = $data['category'];
+        $this->prices = $data['prices'] ?? [];
+        $this->gallery = $data['gallery'] ?? [];
+        $this->attributes = $data['attributes'] ?? [];
+        $this->inStock = $data['in_stock'] ?? false;
+        $this->type = $data['type'] ?? 'simple';
+    }
 
     public function getId()
     {
@@ -37,21 +37,20 @@ abstract class Product
     {
         return $this->name;
     }
+
     public function getBrand()
     {
         return $this->brand;
     }
+
     public function getDescription()
     {
         return $this->description;
     }
+
     public function getCategory()
     {
         return $this->category;
-    }
-    public function getGallery()
-    {
-        return $this->gallery;
     }
 
     public function getPrices()
@@ -59,23 +58,40 @@ abstract class Product
         return $this->prices;
     }
 
+    public function getGallery()
+    {
+        return $this->gallery;
+    }
+
+    public function getAttributes()
+    {
+        return $this->attributes;
+    }
+
     public function getInStock()
     {
         return $this->inStock;
     }
 
-    // Абстрактные методы (каждый тип реализует по-своему)
+    public function getType()
+    {
+        return $this->type;
+    }
+
     abstract public function getPrice($currency = 'USD');
-    abstract public function getAttributes();
-    abstract public function isInStock();
+
+    public function isConfigurable()
+    {
+        return count($this->attributes) > 0;
+    }
+
     public static function createFromArray($data)
     {
-        // Если есть атрибуты с вариантами - это configurable
+
         if (!empty($data['attributes'])) {
             return new ConfigurableProduct($data);
         } else {
             return new SimpleProduct($data);
         }
     }
-
 }

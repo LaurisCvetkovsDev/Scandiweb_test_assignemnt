@@ -1,6 +1,5 @@
 import { ProductData } from "../types/ProductData";
 
-//const GRAPHQL_ENDPOINT = "http://localhost/scandiFinal/NewBackend2/fullstack-test-starter/public/";
 const GRAPHQL_ENDPOINT = "https://laucve1.dreamhosters.com/scandiFinal/NewBackend2/fullstack-test-starter/public/";
 
 const graphqlRequest = async (query: string, variables?: any): Promise<any> => {
@@ -34,7 +33,6 @@ const graphqlRequest = async (query: string, variables?: any): Promise<any> => {
   }
 };
 
-// Получить все категории
 export const fetchProduct = async (id: string): Promise<ProductData | null> => {
   try {
     const products = await fetchProducts();
@@ -46,7 +44,6 @@ export const fetchProduct = async (id: string): Promise<ProductData | null> => {
   }
 };
 
-// Получить продукты по категории (фильтруем на фронтенде)
 export const fetchProductsByCategory = async (category: string): Promise<ProductData[]> => {
   try {
     const products = await fetchProducts();
@@ -60,7 +57,6 @@ export const fetchProductsByCategory = async (category: string): Promise<Product
   }
 };
 
-// Получить все продукты
 export const fetchProducts = async (): Promise<ProductData[]> => {
   const query = `
     {
