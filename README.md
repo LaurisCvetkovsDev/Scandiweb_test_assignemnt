@@ -30,3 +30,6 @@ Requirements
 PHP 8.0+
 MySQL
 Node.js 18+
+
+<img width="1389" height="885" alt="image" src="https://github.com/user-attachments/assets/3a8e5c83-a92e-4f61-aa40-817e92412f1a" />
+
