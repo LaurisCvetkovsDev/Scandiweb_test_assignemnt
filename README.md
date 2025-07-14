@@ -1,5 +1,7 @@
 eCommerce Website
 
+public link: https://scandiwebtestassignmentlc.vercel.app/all
+
 React + PHP GraphQL eCommerce app for Scandiweb.
 
 Setup
