@@ -1,4 +1,3 @@
-/* Global Reset and Base Styles */
 html,
 body,
 #root {
@@ -16,13 +15,11 @@ body,
   box-sizing: border-box;
 }
 
-/* Remove default link styles */
 a {
   text-decoration: none;
   color: inherit;
 }
 
-/* Button reset */
 button {
   border: none;
   background: none;
@@ -30,21 +27,18 @@ button {
   font-family: inherit;
 }
 
-/* Remove default list styles */
 ul, ol {
   list-style: none;
   padding: 0;
   margin: 0;
 }
 
-/* Image base styles */
 img {
   max-width: 100%;
   height: auto;
   display: block;
 }
 
-/* Product Grid Cart Button Hover Effect */
 .product-cart-button {
   opacity: 0 !important;
   transition: opacity 0.2s ease !important;

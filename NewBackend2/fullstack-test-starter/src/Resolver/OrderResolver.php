@@ -10,7 +10,7 @@ class OrderResolver
         $db->beginTransaction();
         try {
             $orderId = uniqid('order_');
-            $totalAmount = 0; // будет рассчитан ниже
+            $totalAmount = 0;
 
             $orderSql = "INSERT INTO orders (id, total_amount, currency, status, created_at) 
                          VALUES (?, ?, 'USD', 'pending', NOW())";

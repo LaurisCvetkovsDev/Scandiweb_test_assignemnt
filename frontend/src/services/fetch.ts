@@ -98,7 +98,7 @@ export const fetchProducts = async (): Promise<ProductData[]> => {
   }
 };
 
-// Создать заказ
+
 export const createOrder = async (orderData: {
   products: Array<{
     id: string;
