@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useDataStore } from "../store";
 import { ProductData } from "../types/ProductData";
+import "./Detail.css";
 
 const Detail = () => {
   const params = useParams();
@@ -27,19 +28,7 @@ const Detail = () => {
   }, [product]);
 
   if (!product) {
-    return (
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          height: "50vh",
-          fontSize: "18px",
-        }}
-      >
-        Loading...
-      </div>
-    );
+    return <div className="detail-loading">Loading...</div>;
   }
 
   const handleSelect = (attrName: string, itemId: string) => {
@@ -105,100 +94,28 @@ const Detail = () => {
   );
 
   return (
-    <div
-      style={{
-        backgroundColor: "#f8f9fa",
-        minHeight: "100vh",
-        padding: "40px 20px",
-      }}
-    >
-      <div
-        style={{
-          maxWidth: "1200px",
-          margin: "0 auto",
-          display: "grid",
-          gridTemplateColumns: "auto 1fr 400px",
-          gap: "40px",
-          alignItems: "start",
-        }}
-      >
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            gap: "16px",
-            width: "100px",
-          }}
-        >
+    <div className="detail-container">
+      <div className="detail-content">
+        <div className="detail-thumbnails">
           {product.gallery.map((item, index) => (
             <div
               key={index}
-              style={{
-                cursor: "pointer",
-                border:
-                  selectedImageIndex === index
-                    ? "2px solid #4ade80"
-                    : "2px solid transparent",
-                borderRadius: "4px",
-                overflow: "hidden",
-              }}
+              className={`detail-thumbnail ${
+                selectedImageIndex === index ? "selected" : ""
+              }`}
               onClick={() => setSelectedImageIndex(index)}
             >
-              <img
-                src={item}
-                alt={`Thumbnail ${index}`}
-                style={{
-                  width: "100%",
-                  height: "120px",
-                  objectFit: "cover",
-                  display: "block",
-                }}
-              />
+              <img src={item} alt={`Thumbnail ${index}`} />
             </div>
           ))}
         </div>
 
-        <div
-          data-testid="product-gallery"
-          style={{
-            position: "relative",
-            backgroundColor: "white",
-            borderRadius: "8px",
-            overflow: "hidden",
-          }}
-        >
-          <img
-            src={product.gallery[selectedImageIndex]}
-            alt="Selected"
-            style={{
-              width: "100%",
-              height: "600px",
-              objectFit: "cover",
-              display: "block",
-            }}
-          />
+        <div data-testid="product-gallery" className="detail-gallery">
+          <img src={product.gallery[selectedImageIndex]} alt="Selected" />
 
           {product.gallery.length > 1 && (
             <>
-              <button
-                onClick={prevImage}
-                style={{
-                  position: "absolute",
-                  left: "16px",
-                  top: "50%",
-                  transform: "translateY(-50%)",
-                  backgroundColor: "rgba(0,0,0,0.5)",
-                  color: "white",
-                  border: "none",
-                  borderRadius: "4px",
-                  width: "40px",
-                  height: "40px",
-                  cursor: "pointer",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
+              <button onClick={prevImage} className="detail-nav-button prev">
                 <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
                   <path
                     d="M10 12L6 8L10 4"
@@ -210,25 +127,7 @@ const Detail = () => {
                 </svg>
               </button>
 
-              <button
-                onClick={nextImage}
-                style={{
-                  position: "absolute",
-                  right: "16px",
-                  top: "50%",
-                  transform: "translateY(-50%)",
-                  backgroundColor: "rgba(0,0,0,0.5)",
-                  color: "white",
-                  border: "none",
-                  borderRadius: "4px",
-                  width: "40px",
-                  height: "40px",
-                  cursor: "pointer",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
+              <button onClick={nextImage} className="detail-nav-button next">
                 <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
                   <path
                     d="M6 4L10 8L6 12"
@@ -243,50 +142,18 @@ const Detail = () => {
           )}
         </div>
 
-        <div
-          style={{
-            backgroundColor: "white",
-            padding: "40px",
-            borderRadius: "8px",
-            height: "fit-content",
-          }}
-        >
-          <h1
-            style={{
-              fontSize: "30px",
-              fontWeight: "600",
-              margin: "0 0 30px 0",
-              color: "#333",
-            }}
-          >
-            {product.name}
-          </h1>
+        <div className="detail-info">
+          <h1 className="detail-title">{product.name}</h1>
 
           {product.attributes.map((attribute) => (
             <div
               key={attribute.name}
-              style={{ marginBottom: "30px" }}
+              className="detail-attribute"
               data-testid={`product-attribute-${toKebabCase(attribute.name)}`}
             >
-              <h3
-                style={{
-                  fontSize: "18px",
-                  fontWeight: "700",
-                  marginBottom: "16px",
-                  color: "#333",
-                  textTransform: "uppercase",
-                }}
-              >
-                {attribute.name}:
-              </h3>
+              <h3 className="detail-attribute-title">{attribute.name}:</h3>
 
-              <div
-                style={{
-                  display: "flex",
-                  gap: "12px",
-                  flexWrap: "wrap",
-                }}
-              >
+              <div className="detail-attribute-options">
                 {attribute.items.map((item) => {
                   const isSelected =
                     selectedAttributes[attribute.name] === item.id;
@@ -299,34 +166,16 @@ const Detail = () => {
                         attribute.name
                       )}-${item.value}`}
                       onClick={() => handleSelect(attribute.name, item.id)}
-                      style={{
-                        ...(isColor
-                          ? {
-                              width: "40px",
-                              height: "40px",
-                              backgroundColor: item.value,
-                              border: isSelected
-                                ? "3px solid #333"
-                                : "1px solid #ccc",
-                              borderRadius: "4px",
-                              cursor: "pointer",
-                              outline: "none",
-                            }
-                          : {
-                              padding: "12px 24px",
-                              border: isSelected
-                                ? "2px solid #333"
-                                : "1px solid #333",
-                              backgroundColor: isSelected ? "#333" : "white",
-                              color: isSelected ? "white" : "#333",
-                              fontSize: "16px",
-                              fontWeight: "400",
-                              cursor: "pointer",
-                              borderRadius: "4px",
-                              outline: "none",
-                              transition: "all 0.2s ease",
-                            }),
-                      }}
+                      className={
+                        isColor
+                          ? `detail-color-button ${
+                              isSelected ? "selected" : ""
+                            }`
+                          : `detail-attribute-button ${
+                              isSelected ? "selected" : ""
+                            }`
+                      }
+                      style={isColor ? { backgroundColor: item.value } : {}}
                     >
                       {isColor ? "" : item.value}
                     </button>
@@ -336,19 +185,9 @@ const Detail = () => {
             </div>
           ))}
 
-          <div style={{ marginBottom: "30px" }}>
-            <h3
-              style={{
-                fontSize: "18px",
-                fontWeight: "700",
-                marginBottom: "8px",
-                color: "#333",
-                textTransform: "uppercase",
-              }}
-            >
-              Price:
-            </h3>
-            <div style={{ fontSize: "24px", fontWeight: "700", color: "#333" }}>
+          <div className="detail-price-section">
+            <h3 className="detail-price-title">Price:</h3>
+            <div className="detail-price">
               {product.prices.map((price, index) => (
                 <span key={index}>
                   {price.currency.symbol}
@@ -362,35 +201,12 @@ const Detail = () => {
             data-testid="add-to-cart"
             onClick={() => addToCart(setToCartItem())}
             disabled={!product.inStock || !allAttributesSelected}
-            style={{
-              width: "100%",
-              backgroundColor:
-                product.inStock && allAttributesSelected ? "#4ade80" : "#ccc",
-              color: "white",
-              padding: "16px",
-              fontSize: "16px",
-              fontWeight: "600",
-              textTransform: "uppercase",
-              borderRadius: "4px",
-              marginBottom: "24px",
-              border: "none",
-              cursor:
-                product.inStock && allAttributesSelected
-                  ? "pointer"
-                  : "not-allowed",
-            }}
+            className="detail-add-to-cart"
           >
             {!product.inStock ? "Out of Stock" : "Add to Cart"}
           </button>
 
-          <div
-            data-testid="product-description"
-            style={{
-              fontSize: "14px",
-              lineHeight: "1.6",
-              color: "#666",
-            }}
-          >
+          <div data-testid="product-description" className="detail-description">
             {parseHtmlDescription(product.description)}
           </div>
         </div>

@@ -209,77 +209,85 @@ const ProductGrid = ({ category }: ProductGridProps) => {
                   </div>
                 </Link>
               ) : (
-                <div
+                <Link
+                  to={`/Detail/${item.id}`}
                   style={{
                     textDecoration: "none",
                     color: "inherit",
                     display: "block",
-                    cursor: "not-allowed",
                   }}
                 >
                   <div
                     style={{
-                      position: "relative",
-                      aspectRatio: "1",
-                      overflow: "hidden",
+                      textDecoration: "none",
+                      color: "inherit",
+                      display: "block",
                     }}
                   >
-                    <img
-                      style={{
-                        width: "100%",
-                        height: "100%",
-                        objectFit: "cover",
-                        display: "block",
-                      }}
-                      src={item.gallery[0]}
-                      alt={item.name}
-                    />
-
                     <div
                       style={{
-                        position: "absolute",
-                        top: 0,
-                        left: 0,
-                        right: 0,
-                        bottom: 0,
-                        backgroundColor: "rgba(255, 255, 255, 0.7)",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        fontSize: "24px",
-                        fontWeight: "400",
-                        color: "#8D8F9A",
-                        letterSpacing: "1px",
+                        position: "relative",
+                        aspectRatio: "1",
+                        overflow: "hidden",
                       }}
                     >
-                      OUT OF STOCK
+                      <img
+                        style={{
+                          width: "100%",
+                          height: "100%",
+                          objectFit: "cover",
+                          display: "block",
+                        }}
+                        src={item.gallery[0]}
+                        alt={item.name}
+                      />
+
+                      <div
+                        style={{
+                          position: "absolute",
+                          top: 0,
+                          left: 0,
+                          right: 0,
+                          bottom: 0,
+                          backgroundColor: "rgba(255, 255, 255, 0.7)",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          fontSize: "24px",
+                          fontWeight: "400",
+                          color: "#8D8F9A",
+                          letterSpacing: "1px",
+                        }}
+                      >
+                        OUT OF STOCK
+                      </div>
+                    </div>
+
+                    <div style={{ padding: "20px" }}>
+                      <h3
+                        style={{
+                          fontSize: "18px",
+                          fontWeight: "300",
+                          margin: "0 0 8px 0",
+                          color: "#8D8F9A",
+                        }}
+                      >
+                        {item.name}
+                      </h3>
+                      <p
+                        style={{
+                          fontSize: "18px",
+                          fontWeight: "500",
+                          margin: 0,
+                          color: "#8D8F9A",
+                        }}
+                      >
+                        {item.prices[0]?.currency.symbol}
+                        {item.prices[0]?.amount.toFixed(2)}
+                      </p>
                     </div>
                   </div>
-
-                  <div style={{ padding: "20px" }}>
-                    <h3
-                      style={{
-                        fontSize: "18px",
-                        fontWeight: "300",
-                        margin: "0 0 8px 0",
-                        color: "#8D8F9A",
-                      }}
-                    >
-                      {item.name}
-                    </h3>
-                    <p
-                      style={{
-                        fontSize: "18px",
-                        fontWeight: "500",
-                        margin: 0,
-                        color: "#8D8F9A",
-                      }}
-                    >
-                      {item.prices[0]?.currency.symbol}
-                      {item.prices[0]?.amount.toFixed(2)}
-                    </p>
-                  </div>
-                </div>
+                </Link>
               )}
             </div>
           ))}
