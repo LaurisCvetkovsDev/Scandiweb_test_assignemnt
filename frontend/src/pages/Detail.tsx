@@ -57,7 +57,8 @@ const Detail = () => {
       category: product.category,
       prices: product.prices,
       gallery: product.gallery,
-      attributes: filteredAttributes,
+      attributes: product.attributes,
+      selectedAttributes: filteredAttributes,
     };
 
     return toCartItem;

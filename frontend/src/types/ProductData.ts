@@ -21,5 +21,15 @@ export type ProductData = {
         displayValue?: string;
       }[];
     }[];
+    selectedAttributes: {
+      name: string;
+      type: string;
+      items: {
+        id: string;
+        value: string;
+        displayValue?: string;
+      }[];
+    }[] | null;
   };
+
   

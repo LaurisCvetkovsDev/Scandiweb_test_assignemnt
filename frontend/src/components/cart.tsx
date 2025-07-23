@@ -1,6 +1,7 @@
 import { useDataStore } from "../store";
 import { useState } from "react";
 import { createOrder } from "../services/fetch";
+import "./cart.css";
 
 interface CartProps {
   onClose: () => void;
@@ -11,8 +12,29 @@ const Cart = ({ onClose }: CartProps) => {
   const removeFromCart = useDataStore((state) => state.removeFromCart);
   const [quantities, setQuantities] = useState<{ [key: number]: number }>({});
   const [isPlacingOrder, setIsPlacingOrder] = useState(false);
+  const [selectedAttributes, setSelectedAttributes] = useState<{
+    [key: string]: { [key: string]: string };
+  }>({});
 
   const getQuantity = (index: number) => quantities[index] || 1;
+
+  const allAttributesSelected = cart.every((product, index) => {
+    return product.attributes.every((attr) => {
+      const localSelection = selectedAttributes[index]?.[attr.name];
+      if (localSelection) {
+        return true;
+      }
+
+      if (product.selectedAttributes) {
+        const selectedAttr = product.selectedAttributes.find(
+          (selectedAttr) => selectedAttr.name === attr.name
+        );
+        return selectedAttr && selectedAttr.items.length > 0;
+      }
+
+      return false;
+    });
+  });
 
   const updateQuantity = (index: number, quantity: number) => {
     if (quantity < 1) return;
@@ -35,6 +57,12 @@ const Cart = ({ onClose }: CartProps) => {
         }
       });
       return newQuantities;
+    });
+
+    setSelectedAttributes((prev) => {
+      const newSelectedAttributes = { ...prev };
+      delete newSelectedAttributes[index];
+      return newSelectedAttributes;
     });
   };
 
@@ -59,7 +87,11 @@ const Cart = ({ onClose }: CartProps) => {
         quantity: getQuantity(index),
         selectedAttributes:
           item.attributes?.map((attr) => {
-            const selectedItem = attr.items[0];
+            const selectedItemId =
+              selectedAttributes[index]?.[attr.name] || attr.items[0]?.id;
+            const selectedItem =
+              attr.items.find((item) => item.id === selectedItemId) ||
+              attr.items[0];
             return {
               attributeId: attr.name,
               value: selectedItem.value,
@@ -73,6 +105,7 @@ const Cart = ({ onClose }: CartProps) => {
 
       removeFromCart(0);
       setQuantities({});
+      setSelectedAttributes({});
 
       alert("Order placed successfully! Order ID: " + order.id);
     } catch (error) {
@@ -87,47 +120,58 @@ const Cart = ({ onClose }: CartProps) => {
     return str.toLowerCase().replace(/\s+/g, "-");
   };
 
+  const handleSelect = (index: number, attrName: string, itemId: string) => {
+    setSelectedAttributes((prev) => ({
+      ...prev,
+      [index]: {
+        ...prev[index],
+        [attrName]: itemId,
+      },
+    }));
+  };
+
+  const getSelectedAttribute = (index: number, attrName: string) => {
+    const localSelection = selectedAttributes[index]?.[attrName];
+    if (localSelection) {
+      return localSelection;
+    }
+
+    const product = cart[index];
+    if (product.selectedAttributes) {
+      const selectedAttr = product.selectedAttributes.find(
+        (attr) => attr.name === attrName
+      );
+      if (selectedAttr && selectedAttr.items.length > 0) {
+        return selectedAttr.items[0].id;
+      }
+    }
+
+    return null;
+  };
+
+  const getSelectedAttributeValue = (index: number, attrName: string) => {
+    const selectedId = getSelectedAttribute(index, attrName);
+    if (!selectedId) return null;
+
+    const product = cart[index];
+    const attr = product.attributes.find((a) => a.name === attrName);
+    if (attr) {
+      const item = attr.items.find((item) => item.id === selectedId);
+      return item || attr.items[0];
+    }
+    return null;
+  };
+
   return (
-    <div
-      style={{
-        width: "100%",
-        height: "100vh",
-        backgroundColor: "white",
-        display: "flex",
-        flexDirection: "column",
-      }}
-    >
-      <div
-        style={{
-          padding: "20px",
-          borderBottom: "1px solid #f0f0f0",
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-        }}
-      >
-        <h2
-          style={{
-            margin: 0,
-            fontSize: "16px",
-            fontWeight: "700",
-            color: "#333",
-          }}
-        >
+    <div className="cart-container">
+      <div className="cart-header">
+        <h2 className="cart-title">
           My Bag
-          <span style={{ fontWeight: "500", marginLeft: "8px" }}>
+          <span className="cart-item-count">
             {cart.length} {cart.length === 1 ? "item" : "items"}
           </span>
         </h2>
-        <button
-          onClick={onClose}
-          style={{
-            background: "none",
-            border: "none",
-            cursor: "pointer",
-            padding: "4px",
-          }}
-        >
+        <button onClick={onClose} className="cart-close-button">
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
             <path
               d="M8 8L3 3M8 8L13 13M8 8L13 3M8 8L3 13"
@@ -140,77 +184,20 @@ const Cart = ({ onClose }: CartProps) => {
         </button>
       </div>
 
-      <div
-        style={{
-          flex: 1,
-          padding: "20px",
-          overflowY: "auto",
-        }}
-      >
+      <div className="cart-content">
         {cart.length === 0 ? (
-          <div
-            style={{
-              textAlign: "center",
-              padding: "40px 20px",
-              color: "#666",
-            }}
-          >
-            Your bag is empty
-          </div>
+          <div className="cart-empty">Your bag is empty</div>
         ) : (
           cart.map((product, index) => (
-            <div
-              key={`${product.id}-${index}`}
-              style={{
-                borderBottom: "1px solid #f0f0f0",
-                paddingBottom: "20px",
-                marginBottom: "20px",
-                display: "flex",
-                gap: "12px",
-              }}
-            >
-              <div style={{ flex: 1 }}>
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "flex-start",
-                    marginBottom: "8px",
-                  }}
-                >
-                  <h3
-                    style={{
-                      fontSize: "16px",
-                      fontWeight: "600",
-                      margin: 0,
-                      color: "#333",
-                      flex: 1,
-                    }}
-                  >
-                    {product.name}
-                  </h3>
+            <div key={`${product.id}-${index}`} className="cart-item">
+              <div className="cart-item-content">
+                <div className="cart-item-header">
+                  <h3 className="cart-item-title">{product.name}</h3>
 
                   <button
                     onClick={() => handleRemoveFromCart(index)}
                     data-testid={`cart-btn`}
-                    style={{
-                      background: "none",
-                      border: "none",
-                      cursor: "pointer",
-                      padding: "4px",
-                      marginLeft: "8px",
-                      borderRadius: "4px",
-                      transition: "all 0.2s ease",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.backgroundColor = "#fee2e2";
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.backgroundColor = "transparent";
-                    }}
+                    className="cart-remove-button"
                     title="Remove item"
                   >
                     <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
@@ -225,101 +212,75 @@ const Cart = ({ onClose }: CartProps) => {
                   </button>
                 </div>
 
-                <div style={{ marginBottom: "12px" }}>
-                  <span
-                    style={{
-                      fontSize: "16px",
-                      fontWeight: "700",
-                      color: "#333",
-                    }}
-                  >
+                <div className="cart-item-price">
+                  <span>
                     {product.prices[0]?.currency.symbol}
                     {product.prices[0]?.amount.toFixed(2)}
                   </span>
                 </div>
 
-                {product.attributes.map((attr) => (
-                  <div
-                    key={attr.name}
-                    style={{ marginBottom: "12px" }}
-                    data-testid={`cart-item-attribute-${toKebabCase(
-                      attr.name
-                    )}`}
-                  >
+                {product.attributes.map((attr) => {
+                  const selectedItem = getSelectedAttributeValue(
+                    index,
+                    attr.name
+                  );
+                  return (
                     <div
-                      style={{
-                        fontSize: "16px",
-                        fontWeight: "700",
-                        marginBottom: "8px",
-                        color: "#333",
-                      }}
+                      key={attr.name}
+                      className="cart-attribute"
+                      data-testid={`cart-item-attribute-${toKebabCase(
+                        attr.name
+                      )}`}
                     >
-                      {attr.name}:
+                      <div className="cart-attribute-title">{attr.name}:</div>
+                      <div className="cart-attribute-options">
+                        {attr.items.map((item) => {
+                          const isColor = attr.name.toLowerCase() === "color";
+                          const isSelected = selectedItem?.id === item.id;
+                          return (
+                            <button
+                              key={item.id}
+                              data-testid={
+                                isSelected
+                                  ? `cart-item-attribute-${toKebabCase(
+                                      attr.name
+                                    )}-${toKebabCase(item.value)}-selected`
+                                  : `cart-item-attribute-${toKebabCase(
+                                      attr.name
+                                    )}-${toKebabCase(item.value)}`
+                              }
+                              onClick={() =>
+                                handleSelect(index, attr.name, item.id)
+                              }
+                              className={
+                                isColor
+                                  ? `cart-color-option ${
+                                      isSelected ? "selected" : ""
+                                    }`
+                                  : `cart-text-option ${
+                                      isSelected ? "selected" : ""
+                                    }`
+                              }
+                              style={
+                                isColor ? { backgroundColor: item.value } : {}
+                              }
+                            >
+                              {!isColor && item.value}
+                            </button>
+                          );
+                        })}
+                      </div>
                     </div>
-                    <div
-                      style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}
-                    >
-                      {attr.items.map((item) => {
-                        const isColor = attr.name.toLowerCase() === "color";
-                        const isSelected = true;
-                        return (
-                          <div
-                            key={item.id}
-                            data-testid={
-                              isSelected
-                                ? `cart-item-attribute-${toKebabCase(
-                                    attr.name
-                                  )}-${toKebabCase(item.value)}-selected`
-                                : `cart-item-attribute-${toKebabCase(
-                                    attr.name
-                                  )}-${toKebabCase(item.value)}`
-                            }
-                            style={{
-                              ...(isColor
-                                ? {
-                                    width: "32px",
-                                    height: "32px",
-                                    backgroundColor: item.value,
-                                    border: "1px solid #ccc",
-                                    borderRadius: "3px",
-                                  }
-                                : {
-                                    padding: "8px 16px",
-                                    border: "1px solid #333",
-                                    fontSize: "14px",
-                                    fontWeight: "400",
-                                    backgroundColor: "#333",
-                                    color: "white",
-                                  }),
-                            }}
-                          >
-                            {!isColor && item.value}
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </div>
-                ))}
+                  );
+                })}
 
-                <div
-                  style={{ display: "flex", alignItems: "center", gap: "16px" }}
-                >
+                <div className="cart-quantity-controls">
                   <button
                     data-testid="cart-item-amount-decrease"
                     onClick={() =>
                       updateQuantity(index, getQuantity(index) - 1)
                     }
-                    style={{
-                      border: "1px solid #333",
-                      borderRadius: "4px",
-                      width: "32px",
-                      height: "32px",
-                      background: "white",
-                      cursor: "pointer",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                    }}
+                    className="cart-quantity-button"
                   >
                     <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
                       <path
@@ -333,12 +294,7 @@ const Cart = ({ onClose }: CartProps) => {
 
                   <span
                     data-testid="cart-item-amount"
-                    style={{
-                      fontSize: "16px",
-                      fontWeight: "500",
-                      minWidth: "20px",
-                      textAlign: "center",
-                    }}
+                    className="cart-quantity-display"
                   >
                     {getQuantity(index)}
                   </span>
@@ -348,17 +304,7 @@ const Cart = ({ onClose }: CartProps) => {
                     onClick={() =>
                       updateQuantity(index, getQuantity(index) + 1)
                     }
-                    style={{
-                      border: "1px solid #333",
-                      borderRadius: "4px",
-                      width: "32px",
-                      height: "32px",
-                      background: "white",
-                      cursor: "pointer",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                    }}
+                    className="cart-quantity-button"
                   >
                     <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
                       <path
@@ -372,81 +318,28 @@ const Cart = ({ onClose }: CartProps) => {
                 </div>
               </div>
 
-              <div
-                style={{
-                  width: "120px",
-                  height: "120px",
-                  flexShrink: 0,
-                }}
-              >
-                <img
-                  src={product.gallery[0]}
-                  alt={product.name}
-                  style={{
-                    width: "100%",
-                    height: "100%",
-                    objectFit: "cover",
-                    borderRadius: "4px",
-                  }}
-                />
+              <div className="cart-item-image">
+                <img src={product.gallery[0]} alt={product.name} />
               </div>
             </div>
           ))
         )}
       </div>
 
-      <div
-        style={{
-          borderTop: "1px solid #f0f0f0",
-          padding: "20px",
-        }}
-      >
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            marginBottom: "20px",
-          }}
-        >
-          <span
-            style={{
-              fontSize: "24px",
-              fontWeight: "500",
-              color: "#333",
-            }}
-          >
-            Total
-          </span>
-          <span
-            data-testid="cart-total"
-            style={{
-              fontSize: "24px",
-              fontWeight: "700",
-              color: "#333",
-            }}
-          >
+      <div className="cart-footer">
+        <div className="cart-total-section">
+          <span className="cart-total-label">Total</span>
+          <span data-testid="cart-total" className="cart-total-amount">
             ${getTotalPrice()}
           </span>
         </div>
 
         <button
           onClick={handlePlaceOrder}
-          disabled={cart.length === 0 || isPlacingOrder}
-          style={{
-            width: "100%",
-            backgroundColor:
-              cart.length > 0 && !isPlacingOrder ? "#4ade80" : "#ccc",
-            color: "white",
-            padding: "16px",
-            fontSize: "16px",
-            fontWeight: "600",
-            textTransform: "uppercase",
-            borderRadius: "4px",
-            border: "none",
-            cursor:
-              cart.length > 0 && !isPlacingOrder ? "pointer" : "not-allowed",
-          }}
+          disabled={
+            cart.length === 0 || isPlacingOrder || !allAttributesSelected
+          }
+          className="cart-place-order-button"
         >
           {isPlacingOrder ? "Placing Order..." : "Place Order"}
         </button>
