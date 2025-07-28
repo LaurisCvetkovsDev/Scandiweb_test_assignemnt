@@ -117,11 +117,11 @@ const Detail = () => {
           {product.gallery.length > 1 && (
             <>
               <button onClick={prevImage} className="detail-nav-button prev">
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <svg width="200" height="200" viewBox="0 0 16 16" fill="none">
                   <path
                     d="M10 12L6 8L10 4"
                     stroke="currentColor"
-                    strokeWidth="2"
+                    strokeWidth="0.5"
                     strokeLinecap="round"
                     strokeLinejoin="round"
                   />
@@ -129,11 +129,11 @@ const Detail = () => {
               </button>
 
               <button onClick={nextImage} className="detail-nav-button next">
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <svg width="200" height="200" viewBox="0 0 16 16" fill="none">
                   <path
                     d="M6 4L10 8L6 12"
                     stroke="currentColor"
-                    strokeWidth="2"
+                    strokeWidth="0.5"
                     strokeLinecap="round"
                     strokeLinejoin="round"
                   />

@@ -1,6 +1,7 @@
-import { Link, useLocation } from "react-router-dom";
 import Cart from "./cart.tsx";
 import { useDataStore } from "../store";
+import "./NavBar.css";
+import { Link, useLocation } from "react-router-dom";
 
 const NavBar = () => {
   const location = useLocation();
@@ -12,42 +13,15 @@ const NavBar = () => {
 
   return (
     <>
-      <nav
-        style={{
-          background: "white",
-          padding: "20px 40px",
-          borderBottom: "1px solid #f0f0f0",
-          position: "sticky",
-          top: 0,
-          zIndex: 2001,
-        }}
-      >
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            maxWidth: "1200px",
-            margin: "0 auto",
-          }}
-        >
-          <div style={{ display: "flex", gap: "40px", alignItems: "center" }}>
+      <nav className="navbar">
+        <div className="navbar-container">
+          <div className="navbar-links">
             <Link
               to="/clothes"
               data-testid={
                 isActive("/clothes") ? "active-category-link" : "category-link"
               }
-              style={{
-                textDecoration: "none",
-                color: isActive("/clothes") ? "#4ade80" : "#333",
-                fontWeight: isActive("/clothes") ? "600" : "400",
-                fontSize: "16px",
-                borderBottom: isActive("/clothes")
-                  ? "2px solid #4ade80"
-                  : "2px solid transparent",
-                paddingBottom: "8px",
-                transition: "all 0.2s ease",
-              }}
+              className={`navbar-link${isActive("/clothes") ? " active" : ""}`}
             >
               CLOTHES
             </Link>
@@ -56,17 +30,7 @@ const NavBar = () => {
               data-testid={
                 isActive("/tech") ? "active-category-link" : "category-link"
               }
-              style={{
-                textDecoration: "none",
-                color: isActive("/tech") ? "#4ade80" : "#333",
-                fontWeight: isActive("/tech") ? "600" : "400",
-                fontSize: "16px",
-                borderBottom: isActive("/tech")
-                  ? "2px solid #4ade80"
-                  : "2px solid transparent",
-                paddingBottom: "8px",
-                transition: "all 0.2s ease",
-              }}
+              className={`navbar-link${isActive("/tech") ? " active" : ""}`}
             >
               TECH
             </Link>
@@ -75,17 +39,7 @@ const NavBar = () => {
               data-testid={
                 isActive("/all") ? "active-category-link" : "category-link"
               }
-              style={{
-                textDecoration: "none",
-                color: isActive("/all") ? "#4ade80" : "#333",
-                fontWeight: isActive("/all") ? "600" : "400",
-                fontSize: "16px",
-                borderBottom: isActive("/all")
-                  ? "2px solid #4ade80"
-                  : "2px solid transparent",
-                paddingBottom: "8px",
-                transition: "all 0.2s ease",
-              }}
+              className={`navbar-link${isActive("/all") ? " active" : ""}`}
             >
               ALL
             </Link>
@@ -95,24 +49,7 @@ const NavBar = () => {
             <button
               data-testid="cart-btn"
               onClick={() => setCartOpen(!isCartOpen)}
-              style={{
-                background: "none",
-                border: "none",
-                cursor: "pointer",
-                position: "relative",
-                padding: "8px",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                transition: "all 0.2s ease",
-                borderRadius: "6px",
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = "#f3f4f6";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = "transparent";
-              }}
+              className="navbar-cart-btn"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -124,7 +61,7 @@ const NavBar = () => {
                 strokeLinecap="round"
                 strokeLinejoin="round"
                 viewBox="0 0 24 24"
-                style={{ color: "#1f2937" }}
+                className="navbar-cart-icon"
               >
                 <circle cx="9" cy="21" r="1" />
                 <circle cx="20" cy="21" r="1" />
@@ -132,24 +69,7 @@ const NavBar = () => {
               </svg>
 
               {cart.length > 0 && (
-                <span
-                  style={{
-                    position: "absolute",
-                    top: "2px",
-                    right: "2px",
-                    backgroundColor: "#ef4444",
-                    color: "white",
-                    borderRadius: "50%",
-                    width: "16px",
-                    height: "16px",
-                    fontSize: "10px",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    fontWeight: "600",
-                    border: "2px solid white",
-                  }}
-                >
+                <span className="navbar-cart-badge">
                   {cart.length > 9 ? "9+" : cart.length}
                 </span>
               )}
@@ -161,33 +81,15 @@ const NavBar = () => {
       {isCartOpen && (
         <>
           <div
-            style={{
-              position: "fixed",
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              backgroundColor: "rgba(0, 0, 0, 0.5)",
-              zIndex: 1999,
-            }}
+            className="navbar-cart-overlay"
             onClick={() => setCartOpen(false)}
           />
 
           <div
             data-testid="cart-overlay"
-            style={{
-              position: "fixed",
-              top: 0,
-              right: 0,
-              height: "100vh",
-              width: "400px",
-              backgroundColor: "white",
-              zIndex: 2000,
-              transform: isCartOpen ? "translateX(0)" : "translateX(100%)",
-              transition: "transform 0.3s ease",
-            }}
+            className={`navbar-cart-drawer${isCartOpen ? " open" : ""}`}
           >
-            <Cart onClose={() => setCartOpen(false)} />
+            <Cart />
           </div>
         </>
       )}

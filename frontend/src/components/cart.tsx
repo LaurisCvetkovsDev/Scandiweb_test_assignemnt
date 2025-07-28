@@ -1,13 +1,9 @@
 import { useDataStore } from "../store";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { createOrder } from "../services/fetch";
 import "./cart.css";
 
-interface CartProps {
-  onClose: () => void;
-}
-
-const Cart = ({ onClose }: CartProps) => {
+const Cart = () => {
   const cart = useDataStore((state) => state.cart);
   const removeFromCart = useDataStore((state) => state.removeFromCart);
   const clearCart = useDataStore((state) => state.clearCart);
@@ -18,6 +14,11 @@ const Cart = ({ onClose }: CartProps) => {
   }>({});
 
   const getQuantity = (index: number) => quantities[index] || 1;
+
+  useEffect(() => {
+    console.log("Cart at this moment:");
+    console.log(cart);
+  }, [cart]);
 
   const allAttributesSelected = cart.every((product, index) => {
     return product.attributes.every((attr) => {
@@ -45,28 +46,6 @@ const Cart = ({ onClose }: CartProps) => {
       ...prev,
       [index]: quantity,
     }));
-  };
-
-  const handleRemoveFromCart = (index: number) => {
-    removeFromCart(index);
-    setQuantities((prev) => {
-      const newQuantities: { [key: number]: number } = {};
-      Object.keys(prev).forEach((key) => {
-        const keyIndex = parseInt(key);
-        if (keyIndex < index) {
-          newQuantities[keyIndex] = prev[keyIndex];
-        } else if (keyIndex > index) {
-          newQuantities[keyIndex - 1] = prev[keyIndex];
-        }
-      });
-      return newQuantities;
-    });
-
-    setSelectedAttributes((prev) => {
-      const newSelectedAttributes = { ...prev };
-      delete newSelectedAttributes[index];
-      return newSelectedAttributes;
-    });
   };
 
   const getTotalPrice = () => {
@@ -178,17 +157,6 @@ const Cart = ({ onClose }: CartProps) => {
             {cart.length} {cart.length === 1 ? "item" : "items"}
           </span>
         </h2>
-        <button onClick={onClose} className="cart-close-button">
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-            <path
-              d="M8 8L3 3M8 8L13 13M8 8L13 3M8 8L3 13"
-              stroke="#333"
-              strokeWidth="1.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
-        </button>
       </div>
 
       <div className="cart-content">
@@ -200,23 +168,6 @@ const Cart = ({ onClose }: CartProps) => {
               <div className="cart-item-content">
                 <div className="cart-item-header">
                   <h3 className="cart-item-title">{product.name}</h3>
-
-                  <button
-                    onClick={() => handleRemoveFromCart(index)}
-                    data-testid={`cart-btn`}
-                    className="cart-remove-button"
-                    title="Remove item"
-                  >
-                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                      <path
-                        d="M8 8L3 3M8 8L13 13M8 8L13 3M8 8L3 13"
-                        stroke="#dc2626"
-                        strokeWidth="1.5"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                    </svg>
-                  </button>
                 </div>
 
                 <div className="cart-item-price">
@@ -280,51 +231,45 @@ const Cart = ({ onClose }: CartProps) => {
                     </div>
                   );
                 })}
-
-                <div className="cart-quantity-controls">
-                  <button
-                    data-testid="cart-item-amount-decrease"
-                    onClick={() =>
-                      updateQuantity(index, getQuantity(index) - 1)
-                    }
-                    className="cart-quantity-button"
-                  >
-                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                      <path
-                        d="M4 8H12"
-                        stroke="#333"
-                        strokeWidth="1.5"
-                        strokeLinecap="round"
-                      />
-                    </svg>
-                  </button>
-
-                  <span
-                    data-testid="cart-item-amount"
-                    className="cart-quantity-display"
-                  >
-                    {getQuantity(index)}
-                  </span>
-
-                  <button
-                    data-testid="cart-item-amount-increase"
-                    onClick={() =>
-                      updateQuantity(index, getQuantity(index) + 1)
-                    }
-                    className="cart-quantity-button"
-                  >
-                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                      <path
-                        d="M8 4V12M4 8H12"
-                        stroke="#333"
-                        strokeWidth="1.5"
-                        strokeLinecap="round"
-                      />
-                    </svg>
-                  </button>
-                </div>
               </div>
+              <div className="cart-quantity-controls">
+                <button
+                  data-testid="cart-item-amount-decrease"
+                  onClick={() => updateQuantity(index, getQuantity(index) - 1)}
+                  className="cart-quantity-button"
+                >
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                    <path
+                      d="M4 8H12"
+                      stroke="#333"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                    />
+                  </svg>
+                </button>
 
+                <span
+                  data-testid="cart-item-amount"
+                  className="cart-quantity-display"
+                >
+                  {getQuantity(index)}
+                </span>
+
+                <button
+                  data-testid="cart-item-amount-increase"
+                  onClick={() => updateQuantity(index, getQuantity(index) + 1)}
+                  className="cart-quantity-button"
+                >
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                    <path
+                      d="M8 4V12M4 8H12"
+                      stroke="#333"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                    />
+                  </svg>
+                </button>
+              </div>
               <div className="cart-item-image">
                 <img src={product.gallery[0]} alt={product.name} />
               </div>
