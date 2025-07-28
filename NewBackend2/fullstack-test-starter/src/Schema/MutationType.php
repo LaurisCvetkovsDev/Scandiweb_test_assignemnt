@@ -17,6 +17,7 @@ class MutationType
             'input' => ['type' => InputTypes::orderInput()]
           ],
           'resolve' => function ($root, $args) {
+            // Вызываем resolver для создания заказа
             return OrderResolver::createOrder($args['input']);
           }
         ]

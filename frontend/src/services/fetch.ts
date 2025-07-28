@@ -1,6 +1,8 @@
+import { OrderData } from "../types/OrderData";
 import { ProductData } from "../types/ProductData";
 
-const GRAPHQL_ENDPOINT = "https://laucve1.dreamhosters.com/scandiFinal/NewBackend2/fullstack-test-starter/public/";
+//const GRAPHQL_ENDPOINT = "https://laucve1.dreamhosters.com/scandiFinal/NewBackend2/fullstack-test-starter/public/";
+const GRAPHQL_ENDPOINT = "http://localhost/scandiFinal/NewBackend2/fullstack-test-starter/public/";
 
 const graphqlRequest = async (query: string, variables?: any): Promise<any> => {
   try {
@@ -99,16 +101,7 @@ export const fetchProducts = async (): Promise<ProductData[]> => {
 };
 
 
-export const createOrder = async (orderData: {
-  products: Array<{
-    id: string;
-    quantity: number;
-    selectedAttributes: Array<{
-      attributeId: string;
-      value: string;
-    }>;
-  }>;
-}): Promise<any> => {
+export const createOrder = async (orderData: OrderData): Promise<any> => {
   const mutation = `
     mutation PlaceOrder($input: OrderInput!) {
       placeOrder(input: $input) {
@@ -120,8 +113,11 @@ export const createOrder = async (orderData: {
   `;
 
   try {
+    console.log("order data: ")
+    console.log(orderData)
     const data = await graphqlRequest(mutation, { input: orderData });
     return data.placeOrder;
+    
   } catch (error) {
     console.error("Create order error:", error);
     throw error;

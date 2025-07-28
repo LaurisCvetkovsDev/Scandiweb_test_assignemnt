@@ -10,6 +10,7 @@ interface CartProps {
 const Cart = ({ onClose }: CartProps) => {
   const cart = useDataStore((state) => state.cart);
   const removeFromCart = useDataStore((state) => state.removeFromCart);
+  const clearCart = useDataStore((state) => state.clearCart);
   const [quantities, setQuantities] = useState<{ [key: number]: number }>({});
   const [isPlacingOrder, setIsPlacingOrder] = useState(false);
   const [selectedAttributes, setSelectedAttributes] = useState<{
@@ -102,12 +103,16 @@ const Cart = ({ onClose }: CartProps) => {
       const order = await createOrder({
         products: orderItems,
       });
+      console.log("order Items: " + orderItems);
+      console.log("cart items: " + cart);
+      console.log(cart.length);
 
-      removeFromCart(0);
+      clearCart();
+
       setQuantities({});
       setSelectedAttributes({});
 
-      alert("Order placed successfully! Order ID: " + order.id);
+      alert("Order placed successfully! Order ID: " + order.orderId);
     } catch (error) {
       console.error("Error placing order:", error);
       alert("Failed to place order. Please try again.");

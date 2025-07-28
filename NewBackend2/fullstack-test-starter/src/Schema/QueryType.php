@@ -16,6 +16,7 @@ class QueryType
                 'categories' => [
                     'type' => Type::nonNull(Type::listOf(Types::category())),
                     'resolve' => function () {
+                        // Здесь будет вызов resolver'а
                         return CategoryResolver::getAll();
                     }
                 ],

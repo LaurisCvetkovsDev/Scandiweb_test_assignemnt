@@ -3,13 +3,13 @@ namespace App\Model;
 
 class SwatchAttribute extends Attribute
 {
-    protected $items;
+    protected $items;      // например, "#FF0000"
 
     public function __construct($data)
     {
-        $this->id = $data['id'];
-        $this->name = $data['name'];
-        $this->type = $data['type'];
+        $this->id = $data['id'];              // ← отсутствует!
+        $this->name = $data['name'];          // ← отсутствует!
+        $this->type = $data['type'];          // ← отсутствует!
         $this->items = $data['items'];
     }
     public function getValue()

@@ -13,7 +13,7 @@ class ConfigurableProduct extends Product
         $this->prices = $data['prices'] ?? [];
         $this->gallery = $data['gallery'];
         $this->attributes = $data['attributes'] ?? [];
-        $this->inStock = $data['in_stock'] ?? false;
+        $this->inStock = $data['in_stock'] ?? false; // Исправлено поле из базы
         $this->type = $this instanceof ConfigurableProduct ? 'configurable' : 'simple';
     }
     public function getAttributes()
@@ -27,7 +27,7 @@ class ConfigurableProduct extends Product
                 return $price['amount'];
             }
         }
-        return null;
+        return null; // цена не найдена
     }
     public function isInStock()
     {
