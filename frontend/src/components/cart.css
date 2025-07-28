@@ -15,6 +15,8 @@
 }
 
 .cart-title {
+  padding-top: 80px;
+  text-align: center;
   margin: 0;
   font-size: 16px;
   font-weight: 700;
