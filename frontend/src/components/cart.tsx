@@ -38,7 +38,9 @@ const Cart = ({ onClose }: CartProps) => {
   });
 
   const updateQuantity = (index: number, quantity: number) => {
-    if (quantity < 1) return;
+    if (quantity < 1) {
+      removeFromCart(index);
+    }
     setQuantities((prev) => ({
       ...prev,
       [index]: quantity,
