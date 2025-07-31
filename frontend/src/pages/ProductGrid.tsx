@@ -4,9 +4,15 @@ import "../styles/ProductGrid.css";
 import ProductGridCard from "../components/ProductGridCard";
 
 const ProductGrid = () => {
+  const setProduct = useDataStore((state) => state.setProduct);
+
   const products = useDataStore((state) => state.products);
   const setAllProducts = useDataStore((state) => state.setAllProducts);
   const Location = window.location.pathname;
+
+  useEffect(() => {
+    setProduct("");
+  }, []);
 
   useEffect(() => {
     setAllProducts();
