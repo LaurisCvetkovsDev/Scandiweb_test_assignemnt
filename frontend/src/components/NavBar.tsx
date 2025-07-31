@@ -1,6 +1,6 @@
-import Cart from "./cart.tsx";
+import Cart from "./cart/Cart.tsx";
 import { useDataStore } from "../store";
-import "./NavBar.css";
+import "../styles/NavBar.css";
 import { Link, useLocation } from "react-router-dom";
 
 const NavBar = () => {

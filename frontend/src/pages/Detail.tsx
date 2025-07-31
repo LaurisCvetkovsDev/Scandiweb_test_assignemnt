@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useDataStore } from "../store";
 import { ProductData } from "../types/ProductData";
-import "./Detail.css";
+import "../styles/Detail.css";
 
 const Detail = () => {
   const params = useParams();

@@ -1,0 +1,22 @@
+.Footer{
+    background-color: white;
+    border-top: 1px solid #f0f0f0;
+    padding: 40px 20px;
+    text-align: center;
+    margin-top: auto;
+}
+.Footer-container{
+    max-width: 1200px;
+    margin:0 auto;
+}
+.Not-reserved{
+    margin: 0;
+    font-size: 14px;
+    color: #8D8F9A;
+    font-Weight: "400";
+}
+.Footer-name{
+    font-size: 14px;
+    color: #8D8F9A;
+    font-weight: 500;
+}
