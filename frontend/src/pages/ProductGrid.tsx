@@ -3,23 +3,19 @@ import { Link } from "react-router-dom";
 import { useDataStore } from "../store";
 import "./ProductGrid.css";
 
-interface ProductGridProps {
-  category?: string;
-  showAddToCart?: boolean;
-}
-
-const ProductGrid = ({ category }: ProductGridProps) => {
+const ProductGrid = () => {
   const products = useDataStore((state) => state.products);
   const setAllProducts = useDataStore((state) => state.setAllProducts);
   const addToCart = useDataStore((state) => state.addToCart);
+  const Location = window.location.pathname;
 
   useEffect(() => {
     setAllProducts();
   }, [setAllProducts]);
 
   const displayProducts =
-    category && category !== "all"
-      ? products.filter((product) => product.category === category)
+    Location !== "/all"
+      ? products.filter((product) => "/" + product.category === Location)
       : products;
 
   const handleAddToCart = (e: React.MouseEvent, product: any) => {
@@ -33,9 +29,9 @@ const ProductGrid = ({ category }: ProductGridProps) => {
   };
 
   const getCategoryTitle = () => {
-    if (category === "clothes") return "CLOTHES";
-    if (category === "tech") return "TECH";
-    if (category === "all") return "ALL";
+    if (Location === "/clothes") return "CLOTHES";
+    if (Location === "/tech") return "TECH";
+    if (Location === "/all") return "ALL";
     return "CATEGORY";
   };
 

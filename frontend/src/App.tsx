@@ -4,10 +4,8 @@ import {
   Route,
   Navigate,
 } from "react-router-dom";
-import TechGrid from "./pages/techGrid";
-import ClothesGrid from "./pages/clothesGrid";
-import AllGrid from "./pages/allGrid";
 
+import ProductGrid from "./pages/ProductGrid";
 import Layout from "./Layout";
 import "bootstrap/dist/css/bootstrap.css";
 import "./App.css";
@@ -20,9 +18,9 @@ function App() {
         <Routes>
           <Route element={<Layout />}>
             <Route path="/" element={<Navigate to="/all" replace />} />
-            <Route path="/all" element={<AllGrid />} />
-            <Route path="/tech" element={<TechGrid />} />
-            <Route path="/clothes" element={<ClothesGrid />} />
+            <Route path="/all" element={<ProductGrid />} />
+            <Route path="/tech" element={<ProductGrid />} />
+            <Route path="/clothes" element={<ProductGrid />} />
             <Route path="/Detail/:id" element={<Detail />} />
           </Route>
         </Routes>
